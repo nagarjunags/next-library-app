@@ -1,3 +1,4 @@
+// @/db/requests.repository.ts
 import { getDb } from "./drizzle/migrate";
 import { booksRequestsTable } from "./drizzle/library.schema";
 import { eq, sql, like, or, and } from "drizzle-orm";
@@ -43,20 +44,22 @@ export class Requestsrepository {
     const db = await getDb();
 
     try {
-      // Build the query using Drizzle ORM
-      let query = db
-        .select()
-        .from(booksRequestsTable)
-        .where(eq(booksRequestsTable.uId, user.toString())) as any;
+      // Build the base query using Drizzle ORM
+      let query = db.select().from(booksRequestsTable) as any;
 
+      // Add condition to filter by user ID only if user !== 0
+      if (user !== 0) {
+        query = query.where(eq(booksRequestsTable.uId, user.toString())) as any;
+      }
+
+      // Apply search filter if search term is provided
       if (search) {
         query = query.where(
           or(
             like(booksRequestsTable.isbnNo, `%${search}%`),
             like(booksRequestsTable.uId, `%${search}%`)
-            // Add more fields here if needed
           )
-        ) as any; // Using 'or' to match either uId or isbnNo
+        ) as any;
       }
 
       query = query.limit(limit).offset(offset);
@@ -77,6 +80,23 @@ export class Requestsrepository {
     } catch (err) {
       console.error("Error listing book requests:", err);
       throw err;
+    }
+  }
+  async updateStatus(requestId: number, newStatus: number) {
+    const db = await getDb();
+    console.log("REPO:", requestId, newStatus);
+
+    try {
+      // Update the status of the book request
+      await db
+        .update(booksRequestsTable)
+        .set({ status: newStatus })
+        .where(eq(booksRequestsTable.id, requestId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating book request status:", error);
+      return { success: false, error: error.message };
     }
   }
 }

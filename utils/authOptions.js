@@ -20,20 +20,9 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     /**
-     * This callback is modifying the functionality of the inBuilt Signin function present in th Nextauth
-     * if it is not declared here by default it will be returning true upon successfull authentication from any
-     * authproviders
-     *
-     * @async
-     * @param {{ user: any; account: any; profile: any; email: any; credentials: any; }} param0
-     * @param {any} param0.account
-     * @param {any} param0.profile
-     * @param {any} param0.user
-     * @param {any} param0.email
-     * @param {any} param0.credentials
-     * @returns {unknown}
+     * This callback modifies the functionality of the in-built SignIn function present in NextAuth.
+     * If it is not declared here, by default it will return true upon successful authentication.
      */
-
     async signIn({ user, account, profile, email, credentials }) {
       console.log("---------------------------------");
       console.log("email:", profile.email);
@@ -61,21 +50,29 @@ export const authOptions = {
     },
 
     /**
-     * This callback function is just modifyng the session by appending the UID of the current user
-     * so that all other pages can have the refference of which user is loggedin in the perticular session.
-     *
-     * This callback function implementation here can also be avoided if we are ok with the
-     * default functionality
-     *
-     * @async
-     * @param {{ session: any; }} param0
-     * @param {any} param0.session
-     * @returns {unknown}
+     * This callback modifies the session by appending the UID of the current user
+     * so that all other pages can reference the logged-in user in the particular session.
      */
     async session({ session }) {
-      const ueserInDb = await userRepo.getByEmail(session.user.email);
-      session.user.id = ueserInDb.UId;
+      const userInDb = await userRepo.getByEmail(session.user.email);
+      console.log(userInDb);
+      session.user.id = userInDb.UId;
+      session.user.role = userInDb.role;
+      console.log("Role:", session.user.role);
       return session;
     },
+  },
+
+  // Custom sign-out behavior
+  events: {
+    async signOut({ url, token }) {
+      // You can handle additional cleanup or logic here if needed
+      console.log("User signed out");
+    },
+  },
+
+  // Custom redirect after sign-out
+  pages: {
+    signOut: "/", // Redirect user to home page after sign-out
   },
 };

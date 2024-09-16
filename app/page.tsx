@@ -12,7 +12,6 @@ const Home = async ({ searchParams }) => {
   const bookRepo = new BookRepository();
 
   const session = await getServerSession(authOptions);
-  console.log("home", session?.user?.id);
 
   // Retrieve search term, page, and limit from query params
   const searchTerm = searchParams.search || "";

@@ -1,9 +1,11 @@
+// app/requests/page.tsx
 "use server"; // TODO: make the table to not to grow beyond certain limit
 import React from "react";
 import { Requestsrepository } from "@/db/requests.repository";
 import BookRequestsClient from "./BookRequestsClient"; // Import the client component
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
+import { user } from "@/db/drizzle/library.schema";
 
 const BookRequestsList = async ({ searchParams }) => {
   const session = await getServerSession(authOptions);
@@ -24,15 +26,16 @@ const BookRequestsList = async ({ searchParams }) => {
   const limit = 10;
   const offset = (page - 1) * limit;
 
+  let id = session.user.id;
   // Fetch paginated book requests // TODO: MAKE IT USER SPECIFIC
-  const { items: requests, pagination } = await requestRepo.list(
-    session.user.id,
-    {
-      search: searchTerm,
-      limit,
-      offset,
-    }
-  );
+  if (session.user.role === "admin") {
+    id = 0;
+  }
+  const { items: requests, pagination } = await requestRepo.list(id, {
+    search: searchTerm,
+    limit,
+    offset,
+  });
 
   return (
     <BookRequestsClient

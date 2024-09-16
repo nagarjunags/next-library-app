@@ -1,8 +1,12 @@
+// components/BookCard.tsx
 "use client";
 import React from "react";
-import { borrowBookAction } from "@/actions/borrowActions"; // Import the server-side action
+import { borrowBookAction } from "@/actions/borrowActions";
+import { deleteBookAction } from "@/actions/deleteBookActions"; // Import the delete action
+import { useSession } from "next-auth/react"; // Import useSession to get session details
 
 interface Book {
+  id: number;
   title: string;
   author: string;
   publisher: string;
@@ -18,6 +22,8 @@ interface BookCardProps {
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
+  const { data: session } = useSession(); // Get session details
+
   const handleBorrow = async () => {
     const confirmation = window.confirm(
       `Are you sure you want to borrow "${book.title}"?`
@@ -25,9 +31,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
     if (confirmation) {
       try {
-        // Call the server-side action
         const result = await borrowBookAction(book.isbnNo);
-        console.log("Result on calling the action:", result);
         if (result.success) {
           alert("Book borrowed successfully!");
         } else {
@@ -35,6 +39,26 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         }
       } catch (error) {
         console.error("An error occurred during the borrow process", error);
+        alert("An error occurred. Please try again later.");
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmation = window.confirm(
+      `Are you sure you want to delete "${book.title}"?`
+    );
+
+    if (confirmation) {
+      try {
+        const result = await deleteBookAction(book.id);
+        if (result.success) {
+          alert("Book deleted successfully!");
+        } else {
+          alert(`Failed to delete book: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("An error occurred during the delete process", error);
         alert("An error occurred. Please try again later.");
       }
     }
@@ -66,12 +90,26 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
           <strong>Available:</strong> {book.availableNumberOfCopies}
         </p>
       </div>
-      <button
-        onClick={handleBorrow}
-        className="mt-4 px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
-      >
-        Borrow
-      </button>
+      <div className="mt-4 flex space-x-2">
+        {session && (
+          <button
+            onClick={handleBorrow}
+            className="px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
+          >
+            Borrow
+          </button>
+        )}
+
+        {/* Conditionally render delete button for admin users */}
+        {session?.user?.role === "admin" && (
+          <button
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-700 text-white font-semibold rounded-lg shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
+          >
+            Delete
+          </button>
+        )}
+      </div>
     </div>
   );
 };

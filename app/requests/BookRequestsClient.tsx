@@ -1,6 +1,8 @@
 "use client";
-
-import React from "react";
+//@/apps/requests/BooksRequestsClient.tsx
+import React, { useState, TransitionStartFunction } from "react";
+import { useSession } from "next-auth/react";
+import { updateRequestStatus } from "./actions"; // Import the server action
 
 export default function BookRequestsClient({
   requests,
@@ -13,6 +15,10 @@ export default function BookRequestsClient({
   searchTerm: string;
   currentPage: number;
 }) {
+  console.log("logging", requests);
+  const { data: session } = useSession();
+  const [updating, setUpdating] = useState<number | null>(null);
+
   const handlePageChange = (newPage: number) => {
     const url = new URL(window.location.href);
     url.searchParams.set("page", newPage.toString());
@@ -22,6 +28,29 @@ export default function BookRequestsClient({
     window.location.href = url.toString();
   };
 
+  const handleStatusChange = async (
+    requestId: number,
+    newStatus: number,
+    isbNo: string,
+    startTransition: TransitionStartFunction
+  ) => {
+    setUpdating(requestId);
+
+    // Use Next.js actions (server actions)
+    startTransition(async () => {
+      const result = await updateRequestStatus(requestId, newStatus, isbNo);
+
+      if (result.success) {
+        alert("Status updated successfully");
+        window.location.reload();
+      } else {
+        alert(`Failed to update status: ${result.error}`);
+      }
+    });
+
+    setUpdating(null); // This is the correct line
+  };
+
   return (
     <section className="py-8 px-4">
       <h2 className="text-2xl font-bold mb-4">Book Requests</h2>
@@ -29,7 +58,10 @@ export default function BookRequestsClient({
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-100">
-              {/* <th className="border p-2 text-left">Request ID</th> */}
+              {" "}
+              {session?.user?.role === "admin" && (
+                <th className="border p-2 text-left">User ID</th>
+              )}
               <th className="border p-2 text-left">ISBN No</th>
               <th className="border p-2 text-left">Request Date</th>
               <th className="border p-2 text-left">Status</th>
@@ -38,17 +70,42 @@ export default function BookRequestsClient({
           <tbody>
             {requests.map((request) => (
               <tr key={request.id} className="border-b">
-                {/* <td className="border p-2">{request.uId}</td> */}
+                {session?.user?.role === "admin" && (
+                  <td className="border p-2">
+                    {request.uId} {/* Displaying user ID */}
+                    {updating === request.id && "Updating..."}
+                  </td>
+                )}
                 <td className="border p-2">{request.isbnNo}</td>
                 <td className="border p-2">
                   {new Date(request.reqDate).toLocaleDateString()}
                 </td>
                 <td className="border p-2">
-                  {request.status === null
-                    ? "Pending"
-                    : request.status
-                    ? "Approved"
-                    : "Rejected"}
+                  {session?.user?.role === "admin" ? (
+                    <select
+                      value={request.status === null ? "" : request.status}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          request.id,
+                          parseInt(e.target.value),
+                          request.isbnNo,
+                          React.startTransition // TODO :PASS THE ISBN AND SO THAT ITS AVAILABLE FOR ACTION FILE
+                        )
+                      }
+                      disabled={updating === request.id}
+                      className="px-2 py-1 border rounded"
+                    >
+                      <option value="">Pending</option>
+                      <option value="1">Approved</option>
+                      <option value="0">Rejected</option>
+                    </select>
+                  ) : request.status === null ? (
+                    "Pending"
+                  ) : request.status === 1 ? (
+                    "Approved"
+                  ) : (
+                    "Rejected"
+                  )}
                 </td>
               </tr>
             ))}

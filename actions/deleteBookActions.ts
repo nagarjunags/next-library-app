@@ -3,24 +3,21 @@
 import { Requestsrepository } from "@/db/requests.repository";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
+import { BookRepository } from "@/db/books.repository";
 
-export async function borrowBookAction(isbnNo: string) {
+export async function deleteBookAction(bookId: number) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (session?.user?.role !== "admin") {
     throw new Error("User is not authenticated");
   }
 
   const requestRepo = new Requestsrepository();
+  const bookRepo = new BookRepository();
 
   try {
-    const requestData = {
-      uId: session.user.id,
-      isbnNo: isbnNo,
-    };
+    const result = await bookRepo.delete(bookId);
 
-    // Create a new book request in the database
-    const result = await requestRepo.create(requestData);
     return { success: true };
   } catch (error) {
     console.error("Failed to create book request", error);

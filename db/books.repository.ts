@@ -115,4 +115,38 @@ export class BookRepository {
     // Drizzle returns results as an array
     return result[0] as unknown as IBook;
   }
+  async getByIsbn(isbn: string) {
+    const db = await getDb();
+    const result = await db
+      .select()
+      .from(book)
+      .where(eq(book.isbnNo, isbn))
+      .limit(1)
+      .execute();
+
+    // Drizzle returns results as an array
+    return result[0] as unknown as IBook;
+  }
+  async delete(id: number): Promise<IBook | null> {
+    // Fetch the record before deletion to return it later
+    const db = await getDb();
+    const recordToDelete = await db
+      .select()
+      .from(book)
+      .where(eq(book.id, BigInt(id)))
+      .limit(1)
+      .execute();
+
+    if (recordToDelete.length === 0) {
+      return null;
+    }
+
+    await db
+      .delete(book)
+      .where(eq(book.id, BigInt(id)))
+      .execute();
+
+    // Return the previously fetched record
+    return recordToDelete[0] as unknown as IBook;
+  }
 }

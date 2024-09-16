@@ -32,6 +32,7 @@ export const user = mysqlTable("users", {
   phoneNum: varchar("phoneNum", { length: 13 }).default(null),
   DOB: varchar("DOB", { length: 20 }).notNull(),
   email: varchar("email", { length: 255 }).unique().default(null), // Ensure email is unique and properly sized
+  role: varchar("role", { length: 10 }).default(null),
 });
 
 export const transaction = mysqlTable("transactions", {

@@ -99,6 +99,17 @@ const Navbar = () => {
                     >
                       Transactions
                     </Link>
+                    {/* Conditionally render the Members button for admin users */}
+                    {session.user.role === "admin" && (
+                      <Link
+                        href="/members"
+                        className={`${
+                          pathname === "/members" ? " bg-black " : ""
+                        }text-white  hover:bg-gray-900 hover:text-white rounded-md px-3 py-2`}
+                      >
+                        Members
+                      </Link>
+                    )}
                   </>
                 )}
               </div>
@@ -194,7 +205,7 @@ const Navbar = () => {
                   tabIndex="-1"
                 >
                   <a
-                    href="/profile.html"
+                    href="/profile"
                     className="block px-4 py-2 text-sm text-gray-700"
                     role="menuitem"
                     tabIndex="-1"
@@ -203,22 +214,22 @@ const Navbar = () => {
                     Your Profile
                   </a>
                   <a
-                    href="saved-properties.html"
+                    href="/settings"
                     className="block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabIndex="-1"
+                    id="user-menu-item-1"
+                  >
+                    Settings
+                  </a>
+                  <button
+                    onClick={() => signOut()}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700"
                     role="menuitem"
                     tabIndex="-1"
                     id="user-menu-item-2"
                   >
-                    Saved Properties
-                  </a>
-                  <button
-                    onClick={() => signOut()}
-                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left"
-                    role="menuitem"
-                    tabIndex="-1"
-                    id="user-menu-item-3"
-                  >
-                    Sign Out
+                    Sign out
                   </button>
                 </div>
               )}
@@ -227,15 +238,15 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu, show/hide based on menu state */}
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="" id="mobile-menu">
-          <div className="space-y-1 px-2 pb-3 pt-2">
+        <div className="md:hidden" id="mobile-menu">
+          <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
             <Link
               href="/"
               className={`${
-                pathname === "/" ? "bg-black" : ""
-              } text-white block rounded-md px-3 py-2 text-base font-medium`}
+                pathname === "/" ? " bg-black " : ""
+              }text-white  hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2`}
             >
               Home
             </Link>
@@ -244,37 +255,30 @@ const Navbar = () => {
                 <Link
                   href="/requests"
                   className={`${
-                    pathname === "/requests" ? "bg-black" : ""
-                  } text-white block rounded-md px-3 py-2 text-base font-medium`}
+                    pathname === "/requests" ? " bg-black " : ""
+                  }text-white  hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2`}
                 >
                   Requests
                 </Link>
                 <Link
                   href="/transactions"
                   className={`${
-                    pathname === "/transactions" ? "bg-black" : ""
-                  } text-white block rounded-md px-3 py-2 text-base font-medium`}
+                    pathname === "/transactions" ? " bg-black " : ""
+                  }text-white  hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2`}
                 >
                   Transactions
                 </Link>
+                {session.user.role === "admin" && (
+                  <Link
+                    href="/members"
+                    className={`${
+                      pathname === "/members" ? " bg-black " : ""
+                    }text-white  hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2`}
+                  >
+                    Members
+                  </Link>
+                )}
               </>
-            )}
-            {providers && !session && (
-              <button
-                className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-4"
-                onClick={() => signIn(providers.google.id)}
-              >
-                <FaGoogle className="text-white mr-2" />
-                <span>Login or Register</span>
-              </button>
-            )}
-            {session && (
-              <button
-                className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-4"
-                onClick={() => signOut()}
-              >
-                Sign Out
-              </button>
             )}
           </div>
         </div>

@@ -1,9 +1,26 @@
-// components/BookCard.tsx
 "use client";
+
 import React from "react";
+import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
+import { Book, User } from "lucide-react";
 import { borrowBookAction } from "@/actions/borrowActions";
-import { deleteBookAction } from "@/actions/deleteBookActions"; // Import the delete action
-import { useSession } from "next-auth/react"; // Import useSession to get session details
+import { deleteBookAction } from "@/actions/deleteBookActions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Book {
   id: number;
@@ -22,7 +39,7 @@ interface BookCardProps {
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
-  const { data: session } = useSession(); // Get session details
+  const { data: session } = useSession();
 
   const handleBorrow = async () => {
     const confirmation = window.confirm(
@@ -65,52 +82,78 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   };
 
   return (
-    <div className="bg-white border border-blue-500 shadow-md rounded-lg p-6 flex flex-col justify-between h-full transition-transform transform hover:scale-105">
-      <div>
-        <h2 className="text-2xl font-bold text-blue-700 mb-2">{book.title}</h2>
-        <p className="text-blue-600 mb-1">
-          <strong>Author:</strong> {book.author}
-        </p>
-        <p className="text-blue-600 mb-1">
-          <strong>Publisher:</strong> {book.publisher}
-        </p>
-        <p className="text-blue-600 mb-1">
-          <strong>Genre:</strong> {book.genre}
-        </p>
-        <p className="text-blue-600 mb-1">
-          <strong>ISBN:</strong> {book.isbnNo}
-        </p>
-        <p className="text-blue-600 mb-1">
-          <strong>Pages:</strong> {book.numofPages}
-        </p>
-        <p className="text-blue-600 mb-1">
-          <strong>Copies:</strong> {book.totalNumberOfCopies}
-        </p>
-        <p className="text-blue-600">
-          <strong>Available:</strong> {book.availableNumberOfCopies}
-        </p>
-      </div>
-      <div className="mt-4 flex space-x-2">
-        {session && (
-          <button
-            onClick={handleBorrow}
-            className="px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
-          >
-            Borrow
-          </button>
-        )}
-
-        {/* Conditionally render delete button for admin users */}
-        {session?.user?.role === "admin" && (
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2 bg-red-700 text-white font-semibold rounded-lg shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
-          >
-            Delete
-          </button>
-        )}
-      </div>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="h-full flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-blue-700">
+            {book.title}
+          </CardTitle>
+          <CardDescription>{book.author}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <p>
+              <span className="font-semibold">Publisher:</span> {book.publisher}
+            </p>
+            <p>
+              <span className="font-semibold">Genre:</span> {book.genre}
+            </p>
+            <p>
+              <span className="font-semibold">ISBN:</span> {book.isbnNo}
+            </p>
+            <p>
+              <span className="font-semibold">Pages:</span> {book.numofPages}
+            </p>
+            <p>
+              <span className="font-semibold">Total Copies:</span>{" "}
+              {book.totalNumberOfCopies}
+            </p>
+            <p>
+              <span className="font-semibold">Available:</span>{" "}
+              {book.availableNumberOfCopies}
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          {session && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={handleBorrow} className="w-full mr-2">
+                    <Book className="mr-2 h-4 w-4" /> Borrow
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Borrow this book</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          {session?.user?.role === "admin" && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleDelete}
+                    variant="destructive"
+                    className="w-full ml-2"
+                  >
+                    <User className="mr-2 h-4 w-4" /> Delete
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete this book (Admin only)</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 };
 

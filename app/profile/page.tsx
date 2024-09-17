@@ -1,10 +1,21 @@
-// app/profile/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "./actions";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { Edit, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
@@ -13,7 +24,6 @@ const ProfilePage = () => {
   const [formData, setFormData] = useState({ name: "", phoneNum: "", DOB: "" });
 
   useEffect(() => {
-    // Fetch profile data when component mounts
     const fetchProfile = async () => {
       const userProfile = await getUserProfile();
       setProfile(userProfile);
@@ -45,97 +55,98 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white shadow-lg rounded-lg p-8">
-        <div className="flex flex-col items-center">
-          {/* Profile Image */}
-          <div className="relative mb-6">
+      <Card className="bg-gradient-to-br from-blue-100 to-purple-100">
+        <CardHeader className="flex flex-col items-center">
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative mb-6"
+          >
             <Image
-              className="w-32 h-32 rounded-full object-cover shadow-md"
-              src={session?.user?.image || "/default-avatar.png"} // Use default image if none exists
+              className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white"
+              src={session?.user?.image || "/default-avatar.png"}
               alt="Profile"
-              width={90}
-              height={90}
+              width={128}
+              height={128}
             />
-          </div>
-
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          </motion.div>
+          <CardTitle className="text-3xl font-bold mb-2 text-blue-800">
             {editMode ? (
-              <input
+              <Input
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="input text-center text-3xl font-semibold"
+                className="text-center text-3xl font-semibold"
                 placeholder="Name"
               />
             ) : (
               profile.name
             )}
-          </h1>
-          <p className="text-gray-500">{session?.user?.email}</p>
-        </div>
-
-        <div className="mt-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          </CardTitle>
+          <p className="text-blue-600">{session?.user?.email}</p>
+        </CardHeader>
+        <CardContent className="mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <Label htmlFor="phoneNum" className="text-blue-700">
                 Phone Number
-              </label>
+              </Label>
               {editMode ? (
-                <input
+                <Input
+                  id="phoneNum"
                   name="phoneNum"
                   value={formData.phoneNum}
                   onChange={handleChange}
-                  className="input mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  className="mt-1 text-center"
                   placeholder="Phone Number"
                 />
               ) : (
-                <p className="text-lg font-medium text-gray-700 mt-2">
+                <p className="text-lg font-medium text-blue-800 mt-2">
                   {profile.phoneNum || "N/A"}
                 </p>
               )}
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <Label htmlFor="DOB" className="text-blue-700">
                 Date of Birth
-              </label>
+              </Label>
               {editMode ? (
-                <input
+                <Input
+                  id="DOB"
                   name="DOB"
                   value={formData.DOB}
                   onChange={handleChange}
-                  className="input mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  className="mt-1 text-center"
                   placeholder="Date of Birth"
                   type="date"
                 />
               ) : (
-                <p className="text-lg font-medium text-gray-700 mt-2">
+                <p className="text-lg font-medium text-blue-800 mt-2">
                   {profile.DOB || "N/A"}
                 </p>
               )}
             </div>
           </div>
-
-          {/* Edit and Save Buttons */}
-          <div className="mt-8 flex justify-center space-x-4">
-            {editMode ? (
-              <button
-                onClick={handleSave}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-500"
-              >
-                Save Changes
-              </button>
-            ) : (
-              <button
-                onClick={handleEdit}
-                className="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-500"
-              >
-                Edit Profile
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          {editMode ? (
+            <Button
+              onClick={handleSave}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Save className="mr-2 h-4 w-4" /> Save Changes
+            </Button>
+          ) : (
+            <Button
+              onClick={handleEdit}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Edit className="mr-2 h-4 w-4" /> Edit Profile
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
     </div>
   );
 };

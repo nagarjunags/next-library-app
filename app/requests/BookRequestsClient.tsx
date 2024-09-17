@@ -1,8 +1,27 @@
 "use client";
-//@/apps/requests/BooksRequestsClient.tsx
+
 import React, { useState, TransitionStartFunction } from "react";
 import { useSession } from "next-auth/react";
-import { updateRequestStatus } from "./actions"; // Import the server action
+import { updateRequestStatus } from "./actions";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function BookRequestsClient({
   requests,
@@ -15,7 +34,6 @@ export default function BookRequestsClient({
   searchTerm: string;
   currentPage: number;
 }) {
-  console.log("logging", requests);
   const { data: session } = useSession();
   const [updating, setUpdating] = useState<number | null>(null);
 
@@ -30,15 +48,18 @@ export default function BookRequestsClient({
 
   const handleStatusChange = async (
     requestId: number,
-    newStatus: number,
+    newStatus: string,
     isbNo: string,
     startTransition: TransitionStartFunction
   ) => {
     setUpdating(requestId);
 
-    // Use Next.js actions (server actions)
     startTransition(async () => {
-      const result = await updateRequestStatus(requestId, newStatus, isbNo);
+      const result = await updateRequestStatus(
+        requestId,
+        parseInt(newStatus),
+        isbNo
+      );
 
       if (result.success) {
         alert("Status updated successfully");
@@ -48,86 +69,99 @@ export default function BookRequestsClient({
       }
     });
 
-    setUpdating(null); // This is the correct line
+    setUpdating(null);
   };
 
   return (
-    <section className="py-8 px-4">
-      <h2 className="text-2xl font-bold mb-4">Book Requests</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              {" "}
-              {session?.user?.role === "admin" && (
-                <th className="border p-2 text-left">User ID</th>
-              )}
-              <th className="border p-2 text-left">ISBN No</th>
-              <th className="border p-2 text-left">Request Date</th>
-              <th className="border p-2 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((request) => (
-              <tr key={request.id} className="border-b">
+    <Card className="m-4">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold mb-4">Book Requests</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
                 {session?.user?.role === "admin" && (
-                  <td className="border p-2">
-                    {request.uId} {/* Displaying user ID */}
-                    {updating === request.id && "Updating..."}
-                  </td>
+                  <TableHead>User ID</TableHead>
                 )}
-                <td className="border p-2">{request.isbnNo}</td>
-                <td className="border p-2">
-                  {new Date(request.reqDate).toLocaleDateString()}
-                </td>
-                <td className="border p-2">
-                  {session?.user?.role === "admin" ? (
-                    <select
-                      value={request.status === null ? "" : request.status}
-                      onChange={(e) =>
-                        handleStatusChange(
-                          request.id,
-                          parseInt(e.target.value),
-                          request.isbnNo,
-                          React.startTransition // TODO :PASS THE ISBN AND SO THAT ITS AVAILABLE FOR ACTION FILE
-                        )
-                      }
-                      disabled={updating === request.id}
-                      className="px-2 py-1 border rounded"
-                    >
-                      <option value="">Pending</option>
-                      <option value="1">Approved</option>
-                      <option value="0">Rejected</option>
-                    </select>
-                  ) : request.status === null ? (
-                    "Pending"
-                  ) : request.status === 1 ? (
-                    "Approved"
-                  ) : (
-                    "Rejected"
+                <TableHead>ISBN No</TableHead>
+                <TableHead>Request Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {requests.map((request) => (
+                <TableRow key={request.id}>
+                  {session?.user?.role === "admin" && (
+                    <TableCell>
+                      {request.uId}
+                      {updating === request.id && "Updating..."}
+                    </TableCell>
                   )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-4 flex justify-between">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={!pagination.hasPrevious}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={!pagination.hasNext}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
-    </section>
+                  <TableCell>{request.isbnNo}</TableCell>
+                  <TableCell>
+                    {new Date(request.reqDate).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {session?.user?.role === "admin" ? (
+                      <Select
+                        value={
+                          request.status === null
+                            ? "pending"
+                            : request.status.toString()
+                        }
+                        onValueChange={(value) =>
+                          handleStatusChange(
+                            request.id,
+                            value,
+                            request.isbnNo,
+                            React.startTransition
+                          )
+                        }
+                        disabled={updating === request.id}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="1">Approved</SelectItem>
+                          <SelectItem value="0">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span>
+                        {request.status === null
+                          ? "Pending"
+                          : request.status === 1
+                          ? "Approved"
+                          : "Rejected"}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="mt-4 flex justify-between">
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={!pagination.hasPrevious}
+            variant="outline"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+          </Button>
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={!pagination.hasNext}
+            variant="outline"
+          >
+            Next <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

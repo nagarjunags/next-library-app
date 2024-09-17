@@ -1,29 +1,27 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import { migrate } from "drizzle-orm/mysql2/migrator";
 import mysql from "mysql2/promise";
-// import { AppEnv } from "../../read-env";
-// import { UserTable } from "/home/nagarjun/learn/data-management/fake/Library-Management/src/drizzle/schema";
 
 // Create a function to initialize the database connection and perform migrations
 async function initializeDb() {
   // Database URL
-  const databaseUrl = "mysql://root:root_password@localhost:3306/library_db";
+  const databaseUrl =
+    "mysql://admin:root_password@library-db.c1ew80qc617b.eu-north-1.rds.amazonaws.com:3306/library-db2";
 
-  //   Connection for migrations
+  // Connection for migrations
   const migrationClient = await mysql.createConnection({
     uri: databaseUrl,
     multipleStatements: true, // Required for running migrations
   });
 
-  //   Perform migrations
+  // Perform migrations
   await migrate(drizzle(migrationClient), {
-    migrationsFolder:
-      "/home/nagarjun/learn/data-management/fake/Library-Management/src/drizzle/migrations", // Adjust this path to your migrations folder
+    migrationsFolder: "/path/to/your/migrations", // Adjust this path to your migrations folder
   });
 
   await migrationClient.end();
 
-  //   Connection pool for queries
+  // Connection pool for queries
   const pool = mysql.createPool({
     uri: databaseUrl,
   });
@@ -41,7 +39,3 @@ export async function getDb() {
   }
   return db;
 }
-
-// export { UserTable };
-
-// initializeDb();

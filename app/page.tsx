@@ -1,5 +1,3 @@
-// app/page.tsx
-"use server";
 import React from "react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/utils/authOptions";
@@ -10,16 +8,13 @@ import Pagination from "@/components/Pagination";
 
 const Home = async ({ searchParams }) => {
   const bookRepo = new BookRepository();
-
   const session = await getServerSession(authOptions);
 
-  // Retrieve search term, page, and limit from query params
   const searchTerm = searchParams.search || "";
   const page = parseInt(searchParams.page || "1", 10);
   const limit = 9;
   const offset = (page - 1) * limit;
 
-  // Fetch paginated books
   const { items: books, pagination } = await bookRepo.list({
     search: searchTerm,
     limit,
@@ -27,24 +22,22 @@ const Home = async ({ searchParams }) => {
   });
 
   return (
-    <section className="bg-blue-500 py-20 mb-4">
+    <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20 mb-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
-            Find The Book
+          <h1 className="text-5xl font-extrabold text-white sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">
+            Discover Your Next Read
           </h1>
-          <p className="my-4 text-xl text-white">
-            Search the book by Author, title or genre...
+          <p className="my-6 text-xl text-blue-100">
+            Explore our vast collection by author, title, or genre...
           </p>
         </div>
-        <Search /> {/* Client component for search */}
-        {/* Book cards */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Search />
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {books.map((book) => (
-            <BookCard key={book.id} book={book} /> // Passing book prop to BookCard
+            <BookCard key={book.id} book={book} />
           ))}
         </div>
-        {/* Pagination controls */}
         <Pagination page={page} pagination={pagination} />
       </div>
     </section>

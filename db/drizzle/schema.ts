@@ -20,10 +20,11 @@ export const book = mysqlTable("books", {
   author: varchar("author", { length: 150 }).notNull(),
   publisher: varchar("publisher", { length: 100 }).notNull(),
   genre: varchar("genre", { length: 31 }).default(null),
-  isbnNo: varchar("isbnNo", { length: 13 }).unique().default(null),
+  isbnNo: varchar("isbnNo", { length: 13 }).default(null),
   numofPages: int("numofPages").notNull(),
   totalNumberOfCopies: int("totalNumberOfCopies").notNull(),
   availableNumberOfCopies: int("availableNumberOfCopies").default(null),
+  coverImage: varchar("coverImage", { length: 500 }).default(null),
 });
 
 export const user = mysqlTable("users", {

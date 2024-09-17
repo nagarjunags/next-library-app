@@ -54,6 +54,21 @@ export class BookRepository {
     return result;
   }
 
+  async create(data: any) {
+    const insert = {
+      ...data,
+      availableNumberOfCopies: data.totalNumberOfCopies,
+    };
+    console.log(insert);
+    const db = await getDb();
+    const insertId = (await db.insert(book).values(insert).$returningId())[0]
+      .id;
+    // console.log(insertId);
+    const addedBook = await this.getById(Number(insertId));
+
+    return addedBook as IBook;
+  }
+
   async list(params: {
     limit: number; // Optional
     offset: number; // Optional

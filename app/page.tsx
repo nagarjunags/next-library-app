@@ -1,9 +1,11 @@
+// app/page.tsx
 import React from "react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/utils/authOptions";
 import { BookRepository } from "@/db/books.repository";
 import BookCard from "@/components/Bookcard";
-import Search from "@/components/Search";
+import AddBook from "@/components/addbook/Adbook";
+import Search from "@/components/Search"; // Ensure this is the Client Component
 import Pagination from "@/components/Pagination";
 
 const Home = async ({ searchParams }) => {
@@ -20,6 +22,7 @@ const Home = async ({ searchParams }) => {
     limit,
     offset,
   });
+  console.log(books);
 
   return (
     <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20 mb-4">
@@ -28,10 +31,12 @@ const Home = async ({ searchParams }) => {
           <h1 className="text-5xl font-extrabold text-white sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">
             Discover Your Next Read
           </h1>
+
           <p className="my-6 text-xl text-blue-100">
             Explore our vast collection by author, title, or genre...
           </p>
         </div>
+        <AddBook />
         <Search />
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {books.map((book) => (

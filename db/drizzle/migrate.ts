@@ -5,9 +5,9 @@ import mysql from "mysql2/promise";
 // Create a function to initialize the database connection and perform migrations
 async function initializeDb() {
   // Database URL
-  const databaseUrl =
-    "mysql://admin:root_password@library-db.c1ew80qc617b.eu-north-1.rds.amazonaws.com:3306/library-db2";
-  // const databaseUrl = "mysql://root:root_password@localhost:3306/library_db";
+  // const databaseUrl =
+  //   "mysql://admin:root_password@library-db.c1ew80qc617b.eu-north-1.rds.amazonaws.com:3306/library-db2";
+  const databaseUrl = "mysql://root:root_password@localhost:3306/library_db";
 
   // Connection for migrations
   const migrationClient = await mysql.createConnection({

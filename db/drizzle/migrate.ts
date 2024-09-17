@@ -15,11 +15,10 @@ async function initializeDb() {
     multipleStatements: true, // Required for running migrations
   });
 
-  // Perform migrations
-  await migrate(drizzle(migrationClient), {
-    migrationsFolder:
-      "/home/nagarjun/learn/new/my-nextjs-project/db/drizzle/migrations", // Adjust this path to your migrations folder
-  });
+  // Perform migrations//TODO: Solve the issue discuss
+  // await migrate(drizzle(migrationClient), {
+  //   migrationsFolder: "/db/drizzle/migrations", // Adjust this path to your migrations folder
+  // });
 
   await migrationClient.end();
 

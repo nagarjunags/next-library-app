@@ -1,7 +1,19 @@
 "use client";
 import React, { useState, TransitionStartFunction } from "react";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion"; // For animations if needed
 import { markAsReturned } from "./actions"; // Server action for marking as returned
+import { ChevronLeft, ChevronRight } from "lucide-react"; // Icons for pagination
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TransactionsClient({
   transactions,
@@ -41,72 +53,79 @@ export default function TransactionsClient({
     setUpdating(null);
   };
 
+  const isAdmin = session?.user?.role === "admin";
+
   return (
-    <section className="py-8 px-4">
-      <h2 className="text-2xl font-bold mb-4">Transactions</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              {session?.user?.role === "admin" && (
-                <th className="border p-2 text-left">User ID</th>
-              )}
-              <th className="border p-2 text-left">ISBN No</th>
-              <th className="border p-2 text-left">Borrow Date</th>
-              <th className="border p-2 text-left">Return Status</th>
-              {session?.user?.role === "admin" && (
-                <th className="border p-2 text-left">Action</th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction) => (
-              <tr key={transaction.id} className="border-b">
-                {session?.user?.role === "admin" && (
-                  <td className="border p-2">{transaction.userId}</td>
-                )}
-                <td className="border p-2">{transaction.isbnNo}</td>
-                <td className="border p-2">
-                  {new Date(transaction.borrowDate).toLocaleDateString()}
-                </td>
-                <td className="border p-2">
-                  {transaction.returned
-                    ? "Returned"
-                    : session?.user?.role === "admin" && (
-                        <button
+    <Card className="m-4">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold mb-4">Transactions</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {isAdmin && <TableHead>User ID</TableHead>}
+                <TableHead>ISBN No</TableHead>
+                <TableHead>Borrow Date</TableHead>
+                <TableHead>Return Status</TableHead>
+                {isAdmin && <TableHead>Action</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  {isAdmin && <TableCell>{transaction.userId}</TableCell>}
+                  <TableCell>{transaction.isbnNo}</TableCell>
+                  <TableCell>
+                    {new Date(transaction.borrowDate).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {transaction.returned ? (
+                      "Returned"
+                    ) : (
+                      <span className="text-yellow-500">Not Returned</span>
+                    )}
+                  </TableCell>
+                  {isAdmin && (
+                    <TableCell>
+                      {!transaction.returned && (
+                        <Button
                           onClick={() =>
                             handleReturn(transaction.id, React.startTransition)
                           }
                           disabled={updating === transaction.id}
-                          className="px-2 py-1 bg-blue-500 text-white rounded"
+                          className="bg-blue-600 hover:bg-blue-700"
                         >
                           {updating === transaction.id
                             ? "Updating..."
                             : "Mark as Returned"}
-                        </button>
+                        </Button>
                       )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-4 flex justify-between">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={!pagination.hasPrevious}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={!pagination.hasNext}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
-    </section>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="mt-4 flex justify-between">
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={!pagination.hasPrevious}
+            variant="outline"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+          </Button>
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={!pagination.hasNext}
+            variant="outline"
+          >
+            Next <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -18,32 +18,42 @@ import {
 } from "@/components/ui/card";
 
 const ProfilePage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession(); // status: 'loading', 'authenticated', 'unauthenticated'
   const [profile, setProfile] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({ name: "", phoneNum: "", DOB: "" });
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const userProfile = await getUserProfile();
-      setProfile(userProfile);
-      setFormData({
-        name: userProfile.name,
-        phoneNum: userProfile.phoneNum,
-        DOB: userProfile.DOB,
-      });
+      try {
+        const userProfile = await getUserProfile();
+        setProfile(userProfile);
+        setFormData({
+          name: userProfile.name || "",
+          phoneNum: userProfile.phoneNum || "",
+          DOB: userProfile.DOB || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
     };
 
-    if (session?.user?.id) {
-      fetchProfile();
+    if (session) {
+      if (session.user) {
+        fetchProfile();
+      }
     }
   }, [session]);
 
   const handleEdit = () => setEditMode(true);
 
   const handleSave = async () => {
-    await updateUserProfile(formData);
-    setEditMode(false);
+    try {
+      await updateUserProfile(formData);
+      setEditMode(false);
+    } catch (error) {
+      console.error("Failed to save profile changes:", error);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +61,7 @@ const ProfilePage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  if (!profile) return <p>Loading...</p>;
+  if (status === "loading" || !profile) return <p>Loading...</p>;
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">

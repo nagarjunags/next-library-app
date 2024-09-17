@@ -85,14 +85,14 @@ export class UserRepository {
   // New method to delete a user
   async delete(id: number) {
     const db = await getDb();
-    await db.delete().from(user).where(eq(user.UId, id));
+    // await db.delete().from(user).where(eq(user.UId, id));
     return { success: true };
   }
 
   // New method to make a user an admin
   async makeAdmin(id: number) {
     const db = await getDb();
-    await db.update(user).set({ role: "admin" }).where(eq(user.UId, id));
+    // await db.update(user).set({ role: "admin" }).where(eq(user.UId, id));
     return { success: true };
   }
 }

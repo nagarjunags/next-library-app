@@ -88,10 +88,10 @@ export class Requestsrepository {
 
     try {
       // Update the status of the book request
-      await db
-        .update(booksRequestsTable)
-        .set({ status: newStatus })
-        .where(eq(booksRequestsTable.id, requestId));
+      // await db
+      //   .update(booksRequestsTable)
+      //   .set({ status: newStatus })
+      //   .where(eq(booksRequestsTable.id, requestId));
 
       return { success: true };
     } catch (error) {

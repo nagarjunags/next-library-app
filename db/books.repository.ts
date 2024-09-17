@@ -2,7 +2,7 @@ import { MySqlQueryGenerator } from "./libs/mysql-query-generator";
 import { WhereExpression } from "./libs/types";
 import { IBook } from "./models/books.model";
 import mysql from "mysql2/promise";
-import { MySqlPoolConnection } from "./src/db/db-connection";
+import { MySqlPoolConnection } from "./db-connection";
 import { RowDataPacket } from "mysql2";
 import { getDb } from "./drizzle/migrate";
 import { book } from "./drizzle/library.schema";

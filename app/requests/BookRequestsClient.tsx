@@ -23,6 +23,16 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+// Define a custom session type
+interface CustomSession {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
+  };
+}
+
 export default function BookRequestsClient({
   requests,
   pagination,
@@ -34,7 +44,7 @@ export default function BookRequestsClient({
   searchTerm: string;
   currentPage: number;
 }) {
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: CustomSession | null };
   const [updating, setUpdating] = useState<number | null>(null);
 
   const handlePageChange = (newPage: number) => {
@@ -72,6 +82,8 @@ export default function BookRequestsClient({
     setUpdating(null);
   };
 
+  const isAdmin = session?.user?.role === "admin";
+
   return (
     <Card className="m-4">
       <CardHeader>
@@ -82,9 +94,7 @@ export default function BookRequestsClient({
           <Table>
             <TableHeader>
               <TableRow>
-                {session?.user?.role === "admin" && (
-                  <TableHead>User ID</TableHead>
-                )}
+                {isAdmin && <TableHead>User ID</TableHead>}
                 <TableHead>ISBN No</TableHead>
                 <TableHead>Request Date</TableHead>
                 <TableHead>Status</TableHead>
@@ -93,7 +103,7 @@ export default function BookRequestsClient({
             <TableBody>
               {requests.map((request) => (
                 <TableRow key={request.id}>
-                  {session?.user?.role === "admin" && (
+                  {isAdmin && (
                     <TableCell>
                       {request.uId}
                       {updating === request.id && "Updating..."}
@@ -104,7 +114,7 @@ export default function BookRequestsClient({
                     {new Date(request.reqDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {session?.user?.role === "admin" ? (
+                    {isAdmin ? (
                       <Select
                         value={
                           request.status === null

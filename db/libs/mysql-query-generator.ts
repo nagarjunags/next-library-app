@@ -7,7 +7,7 @@ import {
   WhereExpression,
   WhereParamValue,
 } from "./types";
-import { IUserBase } from "../user-management/models/user.model";
+import { IUserBase } from "../models/user.model";
 
 export interface SqlClause {
   query: string;

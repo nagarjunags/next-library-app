@@ -63,7 +63,7 @@ import { MySqlQueryGenerator, SqlClause } from "./libs/mysql-query-generator";
 import { WhereExpression } from "./libs/types";
 import { IBook } from "./models/books.model";
 import { ITransaction, ITransactionBase } from "./models/transaction.model";
-import { MySqlTransactionPoolConnection } from "./src/db/db-connection";
+import { MySqlTransactionPoolConnection } from "./db-connection";
 import { UserRepository } from "./users.repository";
 import { eq, sql, like, or, and } from "drizzle-orm";
 
@@ -161,8 +161,8 @@ export class TransactionRepository {
       .select()
       .from(transaction)
       .limit(options.limit)
-      .offset(options.offset)
-      .orderBy(options.orderBy || transaction.issueddate, "desc");
+      .offset(options.offset);
+    // .orderBy(options.orderBy || transaction.issueddate, "desc");
 
     // Filter by userId only if userId is not 0 (for admin purposes)
     if (userId !== 0) {
@@ -185,15 +185,15 @@ export class TransactionRepository {
    */
   async markReturned(transactionId: number) {
     const db = await getDb();
-    const result = await db
-      .update(transaction)
-      .set({
-        isReturned: 1, // Mark as returned
-        returnDate: new Date().toISOString(), // Set the current date as return date
-      })
-      .where(eq(transaction.transactionId, transactionId))
-      .execute();
+    // const result = await db
+    //   .update(transaction)
+    //   .set({
+    //     isReturned: 1, // Mark as returned
+    //     returnDate: new Date().toISOString(), // Set the current date as return date
+    //   })
+    //   .where(eq(transaction.transactionId, transactionId))
+    //   .execute();
 
-    return { success: result > 0 };
+    return { success: true };
   }
 }

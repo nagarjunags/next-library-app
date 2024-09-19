@@ -60,4 +60,5 @@ export const booksRequestsTable = mysqlTable("books_requests", {
   returnDate: varchar("returnDate", { length: 50 }).default(null), // Nullable
   bookId: bigint("bookId", { mode: "bigint", unsigned: true }).notNull(),
   issuedDate: date("issuedDate").default(null), // Nullable
+  bookTitle: varchar("bookTitle", { length: 500 }).default(null),
 });

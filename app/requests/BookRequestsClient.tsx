@@ -95,7 +95,7 @@ export default function BookRequestsClient({
             <TableHeader>
               <TableRow>
                 {isAdmin && <TableHead>User ID</TableHead>}
-                <TableHead>ISBN No</TableHead>
+                <TableHead>Book Title</TableHead>
                 <TableHead>Request Date</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
@@ -109,7 +109,7 @@ export default function BookRequestsClient({
                       {updating === request.id && "Updating..."}
                     </TableCell>
                   )}
-                  <TableCell>{request.isbnNo}</TableCell>
+                  <TableCell>{request.bookTitle}</TableCell>
                   <TableCell>
                     {new Date(request.reqDate).toLocaleDateString()}
                   </TableCell>

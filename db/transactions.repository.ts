@@ -185,14 +185,14 @@ export class TransactionRepository {
    */
   async markReturned(transactionId: number) {
     const db = await getDb();
-    // const result = await db
-    //   .update(transaction)
-    //   .set({
-    //     isReturned: 1, // Mark as returned
-    //     returnDate: new Date().toISOString(), // Set the current date as return date
-    //   })
-    //   .where(eq(transaction.transactionId, transactionId))
-    //   .execute();
+    const result = await db;
+    // .update(transaction)
+    // .set({
+    //   isReturned: 1, // Mark as returned
+    //   returnDate: new Date().toISOString(), // Set the current date as return date
+    // })
+    // .where(eq(transaction.transactionId, transactionId))
+    // .execute();
 
     return { success: true };
   }

@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface HomeClientProps {
   books: BookType[];
@@ -32,6 +33,7 @@ const HomeClient: React.FC<HomeClientProps> = ({
 }) => {
   console.log(initialBooks);
 
+  const { data: session } = useSession();
   const [showAddBookModal, setShowAddBookModal] = useState(false);
   const [books, setBooks] = useState<BookType[]>(initialBooks);
   const [sortBy, setSortBy] = useState<"title" | "author">("title");
@@ -97,12 +99,12 @@ const HomeClient: React.FC<HomeClientProps> = ({
 
         <div className="w-full flex justify-between items-center mt-6">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            {/* <DropdownMenuTrigger asChild>
               <Button variant="outline" className="bg-white text-blue-600">
                 Sort by {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}{" "}
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
+            </DropdownMenuTrigger> */}
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleSort("title")}>
                 Title
@@ -113,12 +115,14 @@ const HomeClient: React.FC<HomeClientProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            onClick={handleAddBookClick}
-            className="bg-blue-700 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-          >
-            Add Book
-          </Button>
+          {session?.user?.role === "admin" && (
+            <Button
+              onClick={handleAddBookClick}
+              className="bg-blue-700 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+            >
+              Add Book
+            </Button>
+          )}
         </div>
         <Pagination page={page} pagination={pagination} />
 

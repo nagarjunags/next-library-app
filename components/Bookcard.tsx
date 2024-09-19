@@ -40,7 +40,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const handleBorrow = async () => {
     if (confirm(`Are you sure you want to borrow "${book.title}"?`)) {
       try {
-        const result = await borrowBookAction(book.isbnNo);
+        const result = await borrowBookAction(book.isbnNo, book.title);
         alert(
           result.success
             ? "Book borrowed successfully!"
@@ -122,9 +122,9 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             <Button
               onClick={handleDelete}
               variant="destructive"
-              className="flex-1 ml-2 bg-gray-200 hover:bg-gray-300"
+              className="flex-1 ml-2 bg-red-500 hover:bg-gray-300"
             >
-              <User className="mr-2 h-4 w-4" /> Delete
+              &times; Delete
             </Button>
           )}
         </CardFooter>

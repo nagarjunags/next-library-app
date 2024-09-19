@@ -1,22 +1,36 @@
-// /components/MembersTable.tsx
 "use client";
-import React from "react";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface User {
-  UId: number;
+  id: string;
   name: string;
   email: string;
   role: string;
 }
 
 interface Pagination {
-  offset: number;
-  limit: number;
   total: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
+  limit: number;
+  offset: number;
 }
 
 interface MembersTableProps {
@@ -24,109 +38,83 @@ interface MembersTableProps {
   pagination: Pagination;
 }
 
-export const MembersTable: React.FC<MembersTableProps> = ({
-  users,
-  pagination,
-}) => {
+export function MembersTable({ users, pagination }: MembersTableProps) {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(
+    Math.floor(pagination.offset / pagination.limit) + 1
+  );
 
-  const handleDelete = async (id: number) => {
-    const response = await fetch(`/members/delete?id=${id}`, {
-      method: "POST",
-    });
-    if (response.ok) {
-      router.refresh(); // Refresh the page after deletion
-    }
-  };
+  const totalPages = Math.ceil(pagination.total / pagination.limit);
 
-  const handleMakeAdmin = async (id: number) => {
-    const response = await fetch(`/members/make-admin?id=${id}`, {
-      method: "POST",
-    });
-    if (response.ok) {
-      router.refresh(); // Refresh the page after updating role
-    }
-  };
-
-  const handlePageChange = (page: number) => {
-    router.push(`/members?page=${page}`);
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    router.push(`/members?page=${newPage}&limit=${pagination.limit}`);
   };
 
   return (
-    <div>
-      <table className="min-w-full bg-white border border-gray-300 rounded-lg">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 border-b border-gray-300 text-left">
-              Name
-            </th>
-            <th className="px-4 py-2 border-b border-gray-300 text-left">
-              Email
-            </th>
-            <th className="px-4 py-2 border-b border-gray-300 text-left">
-              Role
-            </th>
-            <th className="px-4 py-2 border-b border-gray-300 text-left">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="space-y-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {users.map((user) => (
-            <tr key={user.UId}>
-              <td className="px-4 py-2 border-b border-gray-300 text-left">
-                {user.name}
-              </td>
-              <td className="px-4 py-2 border-b border-gray-300 text-left">
-                {user.email}
-              </td>
-              <td className="px-4 py-2 border-b border-gray-300 text-left">
-                {user.role}
-              </td>
-              <td className="px-4 py-2 border-b border-gray-300 text-left flex space-x-2">
-                <button
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                  onClick={() => handleMakeAdmin(user.UId)}
-                >
-                  Make Admin
-                </button>
-                <button
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                  onClick={() => handleDelete(user.UId)}
-                >
-                  <TrashIcon className="w-5 h-5" />
-                </button>
-              </td>
-            </tr>
+            <TableRow key={user.id}>
+              <TableCell className="font-medium">{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.role}</TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() => navigator.clipboard.writeText(user.id)}
+                    >
+                      Copy user ID
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>View user details</DropdownMenuItem>
+                    <DropdownMenuItem>Edit user</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-      <div className="mt-4 flex justify-between items-center">
-        <button
-          className={`px-4 py-2 rounded ${
-            pagination.hasPrevious
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-          disabled={!pagination.hasPrevious}
-          onClick={() => handlePageChange(pagination.offset / pagination.limit)}
+        </TableBody>
+      </Table>
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
         >
+          <ChevronLeft className="h-4 w-4 mr-2" />
           Previous
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${
-            pagination.hasNext
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-          disabled={!pagination.hasNext}
-          onClick={() =>
-            handlePageChange(pagination.offset / pagination.limit + 2)
-          }
+        </Button>
+        <div className="text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
         >
           Next
-        </button>
+          <ChevronRight className="h-4 w-4 ml-2" />
+        </Button>
       </div>
     </div>
   );
-};
+}

@@ -42,7 +42,7 @@ export const transaction = mysqlTable("transactions", {
   bookId: int("bookId").notNull(),
   issueddate: timestamp("issueddate").defaultNow().notNull(),
   returnDate: varchar("returnDate", { length: 100 }).notNull(),
-  isReturned: tinyint("isReturned").default(0).notNull(),
+  isReturned: tinyint("isReturned").default(0).notNull(), // Add this line
   fine: int("fine").default(0).notNull(),
 });
 
@@ -62,4 +62,5 @@ export const booksRequestsTable = mysqlTable("books_requests", {
   isbnNo: varchar("isbnNo", { length: 15 }).notNull(),
   issuedDate: date("issuedDate").default(null), // Nullable
   status: tinyint("status").default(null), // Nullable
+  bookTitle: varchar("bookTitle", { length: 500 }).default(null),
 });

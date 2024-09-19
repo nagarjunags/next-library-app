@@ -27,7 +27,7 @@ const Pagination = ({ page, pagination }) => {
         pageNumbers.push(
           <Button
             key={i}
-            variant={i === page ? "solid" : "outline"}
+            variant={i === page ? "default" : "outline"} // Use "default" for solid style
             onClick={() => handlePageChange(i)}
             className={`mx-1 w-10 h-10 ${
               i === page ? "bg-blue-500 text-white" : "border-white text-white"
@@ -64,7 +64,7 @@ const Pagination = ({ page, pagination }) => {
         pageNumbers.push(
           <Button
             key={i}
-            variant={i === page ? "solid" : "outline"}
+            variant={i === page ? "default" : "outline"}
             onClick={() => handlePageChange(i)}
             className={`mx-1 w-10 h-10 ${
               i === page ? "bg-blue-500 text-white" : "border-white text-white"

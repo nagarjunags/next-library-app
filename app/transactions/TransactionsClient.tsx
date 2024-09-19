@@ -5,6 +5,7 @@ import { motion } from "framer-motion"; // For animations if needed
 import { markAsReturned } from "./actions"; // Server action for marking as returned
 import { ChevronLeft, ChevronRight } from "lucide-react"; // Icons for pagination
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -52,7 +53,7 @@ export default function TransactionsClient({
 
     setUpdating(null);
   };
-
+  // console.log(transactions[0].issueddate);
   const isAdmin = session?.user?.role === "admin";
 
   return (
@@ -67,7 +68,7 @@ export default function TransactionsClient({
               <TableRow>
                 {isAdmin && <TableHead>User ID</TableHead>}
                 <TableHead>ISBN No</TableHead>
-                <TableHead>Borrow Date</TableHead>
+                <TableHead>Issued Date</TableHead>
                 <TableHead>Return Status</TableHead>
                 {isAdmin && <TableHead>Action</TableHead>}
               </TableRow>
@@ -76,9 +77,12 @@ export default function TransactionsClient({
               {transactions.map((transaction) => (
                 <TableRow key={transaction.id}>
                   {isAdmin && <TableCell>{transaction.userId}</TableCell>}
-                  <TableCell>{transaction.isbnNo}</TableCell>
+                  <TableCell>{transaction.bookId}</TableCell>
                   <TableCell>
-                    {new Date(transaction.borrowDate).toLocaleDateString()}
+                    {format(
+                      new Date(" Sep 12 2024 (India Standard Time)"),
+                      "yyyy-MM-dd "
+                    )}
                   </TableCell>
                   <TableCell>
                     {transaction.returned ? (

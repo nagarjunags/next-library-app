@@ -18,33 +18,33 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `library_db`
+-- Database: library_db
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `books`
+-- Table structure for table books
 --
 
-CREATE TABLE `books` (
-  `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(77) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `author` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `publisher` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `genre` varchar(31) DEFAULT NULL,
-  `isbnNo` varchar(13) DEFAULT NULL,
-  `numofPages` int NOT NULL,
-  `totalNumberOfCopies` int NOT NULL,
-  `availableNumberOfCopies` int NOT NULL,
-  `coverImage` varchar(500) DEFAULT NULL
+CREATE TABLE books (
+  id bigint UNSIGNED NOT NULL,
+  title varchar(77) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  author varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  publisher varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  genre varchar(31) DEFAULT NULL,
+  isbnNo varchar(13) DEFAULT NULL,
+  numofPages int NOT NULL,
+  totalNumberOfCopies int NOT NULL,
+  availableNumberOfCopies int NOT NULL,
+  coverImage varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
--- Dumping data for table `books`
+-- Dumping data for table books
 --
 
-INSERT INTO `books` (`id`, `title`, `author`, `publisher`, `genre`, `isbnNo`, `numofPages`, `totalNumberOfCopies`, `availableNumberOfCopies`, `coverImage`) VALUES
+INSERT INTO books (id, title, author, publisher, genre, isbnNo, numofPages, totalNumberOfCopies, availableNumberOfCopies, coverImage) VALUES
 (3, 'COMPUTER PROGRAMMING IN C, SECOND EDITION', 'RAJARAMAN, V.', 'PHI Learning Pvt. Ltd.', 'Computers', '9789388028349', 388, 4, 0, NULL),
 (5, 'Core Python Programming', 'Wesley Chun', 'Prentice Hall Professional', 'Computers', '9780130260369', 805, 3, 2, NULL),
 (6, 'Learn to Code by Solving Problems', 'Daniel Zingaro', 'No Starch Press', 'Computers', '9781718501331', 392, 3, 2, NULL),
@@ -238,64 +238,64 @@ INSERT INTO `books` (`id`, `title`, `author`, `publisher`, `genre`, `isbnNo`, `n
 -- --------------------------------------------------------
 
 --
--- Table structure for table `books_requests`
+-- Table structure for table books_requests
 --
 
-CREATE TABLE `books_requests` (
-  `id` bigint NOT NULL,
-  `uId` varchar(255) NOT NULL,
-  `reqDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `returnDate` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `isbnNo` varchar(15) NOT NULL,
-  `issuedDate` date DEFAULT NULL,
-  `status` tinyint(1) DEFAULT NULL,
-  `bookTitle` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+CREATE TABLE books_requests (
+  id bigint NOT NULL,
+  uId varchar(255) NOT NULL,
+  reqDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  returnDate varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  isbnNo varchar(15) NOT NULL,
+  issuedDate date DEFAULT NULL,
+  status tinyint(1) DEFAULT NULL,
+  bookTitle varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `books_requests`
+-- Dumping data for table books_requests
 --
 
-INSERT INTO `books_requests` (`id`, `uId`, `reqDate`, `returnDate`, `isbnNo`, `issuedDate`, `status`, `bookTitle`) VALUES
+INSERT INTO books_requests (id, uId, reqDate, returnDate, isbnNo, issuedDate, status, bookTitle) VALUES
 (92, '49', '2024-09-19 09:18:49', NULL, '9780130260369', NULL, NULL, 'Core Python Programming'),
 (94, '48', '2024-09-19 10:32:39', NULL, '9781718501331', NULL, 1, 'Learn to Code by Solving Problems');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `refreshTokens`
+-- Table structure for table refreshTokens
 --
 
-CREATE TABLE `refreshTokens` (
-  `id` int NOT NULL,
-  `userId` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE refreshTokens (
+  id int NOT NULL,
+  userId varchar(255) NOT NULL,
+  token varchar(255) NOT NULL,
+  createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `refreshTokens`
+-- Dumping data for table refreshTokens
 --
 
-INSERT INTO `refreshTokens` (`id`, `userId`, `token`, `createdAt`) VALUES
+INSERT INTO refreshTokens (id, userId, token, createdAt) VALUES
 (22, '116126521594908398004', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMTYxMjY1MjE1OTQ5MDgzOTgwMDQiLCJpYXQiOjE3MjQzMDIwMzcsImV4cCI6MTcyNDkwNjgzN30.GLPLI0KKOKPiBMnjox366KwNMVmRQ9os74IWT93rr10', '2024-08-22 04:47:17');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `traineees`
+-- Table structure for table traineees
 --
 
-CREATE TABLE `traineees` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(60) NOT NULL
+CREATE TABLE traineees (
+  id bigint UNSIGNED NOT NULL,
+  name varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `traineees`
+-- Dumping data for table traineees
 --
 
-INSERT INTO `traineees` (`id`, `name`) VALUES
+INSERT INTO traineees (id, name) VALUES
 (1, ''),
 (2, ''),
 (3, 'John Doe'),
@@ -304,68 +304,68 @@ INSERT INTO `traineees` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `transactions`
+-- Table structure for table transactions
 --
 
-CREATE TABLE `transactions` (
-  `transactionId` int NOT NULL,
-  `userId` int NOT NULL,
-  `bookId` int NOT NULL,
-  `issueddate` timestamp NOT NULL DEFAULT (now()),
-  `returnDate` varchar(100) NOT NULL,
-  `isReturned` tinyint NOT NULL DEFAULT '0',
-  `fine` int NOT NULL DEFAULT '0'
+CREATE TABLE transactions (
+  transactionId int NOT NULL,
+  userId int NOT NULL,
+  bookId int NOT NULL,
+  issueddate timestamp NOT NULL DEFAULT (now()),
+  returnDate varchar(100) NOT NULL,
+  isReturned tinyint NOT NULL DEFAULT '0',
+  fine int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `transactions`
+-- Dumping data for table transactions
 --
 
-INSERT INTO `transactions` (`transactionId`, `userId`, `bookId`, `issueddate`, `returnDate`, `isReturned`, `fine`) VALUES
+INSERT INTO transactions (transactionId, userId, bookId, issueddate, returnDate, isReturned, fine) VALUES
 (1, 49, 5, '2024-09-19 14:49:42', '', 0, 0),
 (17, 48, 6, '2024-09-19 10:32:55', '2024-10-04', 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Table structure for table users
 --
 
-CREATE TABLE `users` (
-  `UId` int NOT NULL,
-  `name` varchar(150) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `phoneNum` varchar(13) DEFAULT NULL,
-  `DOB` varchar(20) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `role` varchar(10) DEFAULT NULL
+CREATE TABLE users (
+  UId int NOT NULL,
+  name varchar(150) NOT NULL,
+  password varchar(255) NOT NULL,
+  phoneNum varchar(13) DEFAULT NULL,
+  DOB varchar(20) NOT NULL,
+  email varchar(255) DEFAULT NULL,
+  role varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data for table users
 --
 
-INSERT INTO `users` (`UId`, `name`, `password`, `phoneNum`, `DOB`, `email`, `role`) VALUES
+INSERT INTO users (UId, name, password, phoneNum, DOB, email, role) VALUES
 (48, 'Nagarjuna GS', 'null', '8618333210', '2001-09-07', 'nagarjunags2014@gmail.com', 'admin'),
 (49, 'Nagarjuna GS', 'null', '8618333211', '2001-01-01', 'nagarjuna.gs@codecraft.co.in', 'user');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `__drizzle_migrations`
+-- Table structure for table __drizzle_migrations
 --
 
-CREATE TABLE `__drizzle_migrations` (
-  `id` bigint UNSIGNED NOT NULL,
-  `hash` text NOT NULL,
-  `created_at` bigint DEFAULT NULL
+CREATE TABLE __drizzle_migrations (
+  id bigint UNSIGNED NOT NULL,
+  hash text NOT NULL,
+  created_at bigint DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `__drizzle_migrations`
+-- Dumping data for table __drizzle_migrations
 --
 
-INSERT INTO `__drizzle_migrations` (`id`, `hash`, `created_at`) VALUES
+INSERT INTO __drizzle_migrations (id, hash, created_at) VALUES
 (1, '6ac2eb8cd912d7d1af0e2beeaa9d580aea2c57eccec948a2e82d5077b2d107c9', 1721723609120),
 (2, 'edd2507e20f42930441f90d23f68c459aa6c442984b76d712c3fb1506ef9882a', 1721802807123),
 (3, 'c78a7d1c5fe0623a57af75406e86b85a1c88295b0b8b5b47e539d742eb9e1bfc', 1721884887555),
@@ -381,95 +381,95 @@ INSERT INTO `__drizzle_migrations` (`id`, `hash`, `created_at`) VALUES
 --
 
 --
--- Indexes for table `books`
+-- Indexes for table books
 --
-ALTER TABLE `books`
-  ADD UNIQUE KEY `id` (`id`),
-  ADD UNIQUE KEY `isbnNo` (`isbnNo`);
+ALTER TABLE books
+  ADD UNIQUE KEY id (id),
+  ADD UNIQUE KEY isbnNo (isbnNo);
 
 --
--- Indexes for table `books_requests`
+-- Indexes for table books_requests
 --
-ALTER TABLE `books_requests`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE books_requests
+  ADD PRIMARY KEY (id);
 
 --
--- Indexes for table `refreshTokens`
+-- Indexes for table refreshTokens
 --
-ALTER TABLE `refreshTokens`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE refreshTokens
+  ADD PRIMARY KEY (id);
 
 --
--- Indexes for table `traineees`
+-- Indexes for table traineees
 --
-ALTER TABLE `traineees`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
+ALTER TABLE traineees
+  ADD PRIMARY KEY (id),
+  ADD UNIQUE KEY id (id);
 
 --
--- Indexes for table `transactions`
+-- Indexes for table transactions
 --
-ALTER TABLE `transactions`
-  ADD PRIMARY KEY (`transactionId`);
+ALTER TABLE transactions
+  ADD PRIMARY KEY (transactionId);
 
 --
--- Indexes for table `users`
+-- Indexes for table users
 --
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`UId`);
+ALTER TABLE users
+  ADD PRIMARY KEY (UId);
 
 --
--- Indexes for table `__drizzle_migrations`
+-- Indexes for table __drizzle_migrations
 --
-ALTER TABLE `__drizzle_migrations`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
+ALTER TABLE __drizzle_migrations
+  ADD PRIMARY KEY (id),
+  ADD UNIQUE KEY id (id);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `books`
+-- AUTO_INCREMENT for table books
 --
-ALTER TABLE `books`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
+ALTER TABLE books
+  MODIFY id bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
 
 --
--- AUTO_INCREMENT for table `books_requests`
+-- AUTO_INCREMENT for table books_requests
 --
-ALTER TABLE `books_requests`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+ALTER TABLE books_requests
+  MODIFY id bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
--- AUTO_INCREMENT for table `refreshTokens`
+-- AUTO_INCREMENT for table refreshTokens
 --
-ALTER TABLE `refreshTokens`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+ALTER TABLE refreshTokens
+  MODIFY id int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `traineees`
+-- AUTO_INCREMENT for table traineees
 --
-ALTER TABLE `traineees`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE traineees
+  MODIFY id bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `transactions`
+-- AUTO_INCREMENT for table transactions
 --
-ALTER TABLE `transactions`
-  MODIFY `transactionId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+ALTER TABLE transactions
+  MODIFY transactionId int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT for table users
 --
-ALTER TABLE `users`
-  MODIFY `UId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+ALTER TABLE users
+  MODIFY UId int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
--- AUTO_INCREMENT for table `__drizzle_migrations`
+-- AUTO_INCREMENT for table __drizzle_migrations
 --
-ALTER TABLE `__drizzle_migrations`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+ALTER TABLE __drizzle_migrations
+  MODIFY id bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

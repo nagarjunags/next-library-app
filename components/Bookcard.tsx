@@ -1,4 +1,3 @@
-// @/components/Bookcard.tsx
 "use client";
 
 import React from "react";
@@ -16,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
+import toast, { Toaster } from 'react-hot-toast';
 
 export interface Book {
   id: number;
@@ -38,35 +38,89 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const { data: session } = useSession();
 
   const handleBorrow = async () => {
-    if (confirm(`Are you sure you want to borrow "${book.title}"?`)) {
-      try {
-        const result = await borrowBookAction(book.isbnNo, book.title);
-        alert(
-          result.success
-            ? "Book borrowed successfully!"
-            : `Failed to borrow book: ${result.error}`
-        );
-      } catch (error) {
-        console.error("An error occurred during the borrow process", error);
-        alert("An error occurred. Please try again later.");
+    toast.promise(
+      borrowBookAction(book.isbnNo, book.title),
+      {
+        loading: 'Borrowing book...',
+        success: (result) => result.success ? `Successfully borrowed "${book.title}"` : `Failed to borrow: ${result.error}`,
+        error: 'An error occurred while borrowing the book.',
+      },
+      {
+        style: {
+          minWidth: '250px',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          color: '#fff',
+        },
+        success: {
+          duration: 5000,
+          icon: '🎉',
+        },
+        error: {
+          duration: 5000,
+          icon: '❌',
+        },
       }
-    }
+    );
   };
 
   const handleDelete = async () => {
-    if (confirm(`Are you sure you want to delete "${book.title}"?`)) {
-      try {
-        const result = await deleteBookAction(book.id);
-        alert(
-          result.success
-            ? "Book deleted successfully!"
-            : `Failed to delete book: ${result.error}`
-        );
-      } catch (error) {
-        console.error("An error occurred during the delete process", error);
-        alert("An error occurred. Please try again later.");
-      }
-    }
+    toast((t) => (
+      <div className="flex flex-col items-center">
+        <p className="mb-2">{`Are you sure you want to delete "${book.title}"?`}</p>
+
+
+        <div className="flex space-x-2">
+          <Button
+            onClick={() => {
+              toast.promise(
+                deleteBookAction(book.id),
+                {
+                  loading: 'Deleting book...',
+                  success: (result) => result.success ? 'Book deleted successfully!' : `Failed to delete: ${result.error}`,
+                  error: 'An error occurred while deleting the book.',
+                },
+                {
+                  style: {
+                    minWidth: '250px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    color: '#fff',
+                  },
+                  success: {
+                    duration: 5000,
+                    icon: '🗑️',
+                  },
+                  error: {
+                    duration: 5000,
+                    icon: '❌',
+                  },
+                }
+              );
+              toast.dismiss(t.id);
+            }}
+            variant="destructive"
+            size="sm"
+          >
+            Delete
+          </Button>
+          <Button
+            onClick={() => toast.dismiss(t.id)}
+            variant="outline"
+            size="sm"
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity,
+      position: 'top-center',
+      style: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        color: '#fff',
+        borderRadius: '8px',
+        padding: '1rem',
+      },
+    });
   };
 
   return (
@@ -129,6 +183,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
           )}
         </CardFooter>
       </Card>
+      <Toaster />
     </motion.div>
   );
 };

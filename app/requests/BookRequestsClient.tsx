@@ -85,7 +85,8 @@ export default function BookRequestsClient({
   const isAdmin = session?.user?.role === "admin";
 
   return (
-    <Card className="m-4">
+    <Card className="m-4 mx-auto" style={{ width: '80%', maxWidth: '10000px' }}>
+
       <CardHeader>
         <CardTitle className="text-2xl font-bold mb-4">Book Requests</CardTitle>
       </CardHeader>

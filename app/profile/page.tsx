@@ -9,6 +9,7 @@ import { Edit, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/card";
 
 const ProfilePage = () => {
-  const { data: session, status } = useSession(); // status: 'loading', 'authenticated', 'unauthenticated'
+  const { data: session, status } = useSession();
   const [profile, setProfile] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({ name: "", phoneNum: "", DOB: "" });
@@ -38,10 +39,8 @@ const ProfilePage = () => {
       }
     };
 
-    if (session) {
-      if (session.user) {
-        fetchProfile();
-      }
+    if (session && session.user) {
+      fetchProfile();
     }
   }, [session]);
 
@@ -64,42 +63,44 @@ const ProfilePage = () => {
   if (status === "loading" || !profile) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <Card className="bg-gradient-to-br from-blue-100 to-purple-100">
-        <CardHeader className="flex flex-col items-center">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+      <Card style={{ width: '50%' }}  className=" max-w-md bg-white shadow-xl rounded-2xl overflow-hidden">
+        <CardHeader className="relative pb-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 h-24"></div>
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="relative mb-6"
+            className="relative z-10 flex justify-center"
           >
             <Image
-              className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white"
+              className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
               src={session?.user?.image || "/default-avatar.png"}
               alt="Profile"
-              width={128}
-              height={128}
+              width={80}
+              height={80}
             />
           </motion.div>
-          <CardTitle className="text-3xl font-bold mb-2 text-blue-800">
+        </CardHeader>
+        <CardContent className="pt-2 px-6">
+          <CardTitle className="text-xl font-bold text-center mb-1 text-gray-800">
             {editMode ? (
               <Input
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="text-center text-3xl font-semibold"
+                className="text-center text-xl font-semibold"
                 placeholder="Name"
               />
             ) : (
               profile.name
             )}
           </CardTitle>
-          <p className="text-blue-600">{session?.user?.email}</p>
-        </CardHeader>
-        <CardContent className="mt-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
-            <div>
-              <Label htmlFor="phoneNum" className="text-blue-700">
+          <p className="text-blue-600 text-center text-sm mb-4">{session?.user?.email}</p>
+          <div className="flex justify-between space-x-4">
+            {/* Phone Number */}
+            <div className="flex flex-col items-center  space-y-1">
+              <Label htmlFor="phoneNum" className="text-sm font-medium text-gray-600">
                 Phone Number
               </Label>
               {editMode ? (
@@ -108,17 +109,19 @@ const ProfilePage = () => {
                   name="phoneNum"
                   value={formData.phoneNum}
                   onChange={handleChange}
-                  className="mt-1 text-center"
+                  className="text-center"
                   placeholder="Phone Number"
                 />
               ) : (
-                <p className="text-lg font-medium text-blue-800 mt-2">
+                <p className="text-sm font-medium text-gray-800">
                   {profile.phoneNum || "N/A"}
                 </p>
               )}
             </div>
-            <div>
-              <Label htmlFor="DOB" className="text-blue-700">
+
+            {/* Date of Birth */}
+            <div className="flex flex-col items-center justify-center  ">
+              <Label htmlFor="DOB" className="text-sm font-medium text-gray-600">
                 Date of Birth
               </Label>
               {editMode ? (
@@ -127,30 +130,30 @@ const ProfilePage = () => {
                   name="DOB"
                   value={formData.DOB}
                   onChange={handleChange}
-                  className="mt-1 text-center"
+                  className="text-center"
                   placeholder="Date of Birth"
                   type="date"
                 />
               ) : (
-                <p className="text-lg font-medium text-blue-800 mt-2">
+                <p className="text-sm font-medium text-gray-800">
                   {profile.DOB || "N/A"}
                 </p>
               )}
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex justify-center pb-4 pt-2">
           {editMode ? (
             <Button
               onClick={handleSave}
-              className="bg-blue-600 hover:bg-blue-700"
+              // className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105"
             >
               <Save className="mr-2 h-4 w-4" /> Save Changes
             </Button>
           ) : (
             <Button
               onClick={handleEdit}
-              className="bg-blue-600 hover:bg-blue-700"
+              // className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105"
             >
               <Edit className="mr-2 h-4 w-4" /> Edit Profile
             </Button>

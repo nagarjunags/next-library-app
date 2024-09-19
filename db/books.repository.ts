@@ -7,6 +7,7 @@ import { RowDataPacket } from "mysql2";
 import { getDb } from "./drizzle/migrate";
 import { book } from "./drizzle/library.schema";
 import { like, or, eq } from "drizzle-orm";
+import { count } from "drizzle-orm/sql";
 
 export class BookRepository {
   private mySqlPoolConnection: MySqlPoolConnection;
@@ -79,6 +80,26 @@ export class BookRepository {
 
     try {
       // Build the query using Drizzle ORM
+      //=====================
+      // Get the count of books
+      const [countResult] = await db
+        .select({ count: count() })
+        .from(book)
+        .where(
+          search
+            ? or(
+                like(book.title, `%${search}%`),
+                like(book.author, `%${search}%`),
+                like(book.publisher, `%${search}%`),
+                like(book.genre, `%${search}%`),
+                like(book.isbnNo, `%${search}%`),
+                like(book.id, `%${search}%`)
+              )
+            : undefined
+        );
+      const countBook = (countResult as any).count;
+      //=====================
+
       let query = db.select().from(book) as any;
 
       if (search) {
@@ -107,7 +128,7 @@ export class BookRepository {
         pagination: {
           offset: offset || 0,
           limit: limit || books.length,
-          total: books.length,
+          total: countBook,
           hasNext: limit !== undefined && books.length === limit,
           hasPrevious: (offset || 0) > 0,
         },

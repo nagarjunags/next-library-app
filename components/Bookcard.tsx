@@ -1,3 +1,4 @@
+// @/components/Bookcard.tsx
 "use client";
 
 import React from "react";
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 
-interface Book {
+export interface Book {
   id: number;
   title: string;
   author: string;

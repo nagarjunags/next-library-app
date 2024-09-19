@@ -13,7 +13,7 @@ export async function addBook(bookData: {
   totalNumberOfCopies: number;
   coverImage: string; // URL after Cloudinary upload
 }) {
-  console.log(bookData);
+  // console.log(bookData);
 
   const bookRepository = new BookRepository();
 

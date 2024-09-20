@@ -42,7 +42,7 @@ export const transaction = mysqlTable("transactions", {
   bookId: int("bookId").notNull(),
   issueddate: timestamp("issueddate").defaultNow().notNull(),
   returnDate: varchar("returnDate", { length: 100 }).notNull(),
-  isReturned: tinyint("isReturned").default(0).notNull(), // Add this line
+  isReturned: tinyint("isReturned").default(0).notNull(),
   fine: int("fine").default(0).notNull(),
 });
 

@@ -67,8 +67,6 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
     toast((t) => (
       <div className="flex flex-col items-center">
         <p className="mb-2">{`Are you sure you want to delete "${book.title}"?`}</p>
-
-
         <div className="flex space-x-2">
           <Button
             onClick={() => {
@@ -131,18 +129,19 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
       className="h-full"
     >
       <Card className="h-full flex flex-col justify-between border border-gray-300 bg-white text-gray-900 shadow-sm hover:shadow-md transition-shadow duration-300">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold">{book.title}</CardTitle>
-          <p className="text-sm text-gray-600">{book.author}</p>
+        <CardHeader className="p-4">
+          <CardTitle className="text-lg font-semibold line-clamp-2">{book.title}</CardTitle>
+          <p className="text-sm text-gray-600 line-clamp-1">{book.author}</p>
         </CardHeader>
-        <CardContent>
-          <div className="mb-4 relative w-full h-40 bg-gray-100 rounded-md overflow-hidden">
+        <CardContent className="p-4 flex-grow">
+          <div className="mb-4 relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
             {book.coverImage ? (
               <Image
                 src={book.coverImage}
                 alt={`Cover of ${book.title}`}
                 layout="fill"
-                objectFit="cover"
+                objectFit="contain"
+                className="w-full h-full object-contain"
               />
             ) : (
               <div className="flex items-center justify-center h-full">
@@ -151,7 +150,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             )}
           </div>
           <div className="space-y-1 text-sm">
-            <p>
+            <p className="line-clamp-1">
               <span className="font-medium">ISBN:</span> {book.isbnNo}
             </p>
             <p>
@@ -163,20 +162,20 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             </p>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between pt-4">
+        <CardFooter className="p-4 flex justify-between">
           {session && (
             <Button
               onClick={handleBorrow}
-              className="flex-1 mr-2 bg-gray-200 hover:bg-gray-300"
+              className="bg-blue-200  flex-1 mr-2  text-primary-foreground hover:bg-primary/90"
             >
               <Book className="mr-2 h-4 w-4" /> Borrow
             </Button>
           )}
           {session?.user?.role === "admin" && (
-            <Button
+            <Button 
               onClick={handleDelete}
               variant="destructive"
-              className="flex-1 ml-2 bg-red-500 hover:bg-gray-300"
+              className="bg-red-400 flex-1 ml-2"
             >
               &times; Delete
             </Button>

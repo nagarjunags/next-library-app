@@ -22,7 +22,6 @@ const Home = ({ searchParams }) => {
       setBooks(books);
       setPagination(pagination);
     };
-
     fetchData();
   }, [searchParams]);
 

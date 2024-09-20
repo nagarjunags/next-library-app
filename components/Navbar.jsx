@@ -41,7 +41,7 @@ const Navbar = () => {
   }, []);
 
   const navItems = [
-    { href: "/", label: "Home" },
+    { href: "/", label: "Home", authRequired: true },
     { href: "/requests", label: "Requests", authRequired: true },
     { href: "/transactions", label: "Transactions", authRequired: true },
     { href: "/members", label: "Members", adminOnly: true },

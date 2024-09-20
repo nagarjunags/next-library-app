@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { makeUserAsAdmin,deleteUser } from "@/app/members/actions";
+
 import {
   Table,
   TableBody,
@@ -19,6 +21,7 @@ interface User {
   name: string;
   email: string;
   role: string;
+  UId: number;
 }
 
 interface Pagination {
@@ -45,9 +48,18 @@ export function MembersTable({ users, pagination }: MembersTableProps) {
     router.push(`/members?page=${newPage}&limit=${pagination.limit}`);
   };
 
-  const handleMakeAdmin = (userId: string) => {
-    // Logic for making the user an admin
-    alert(`Making user with ID ${userId} an admin`);
+  const handleMakeAdmin = (user: User) => {
+    makeUserAsAdmin(user);
+    alert(`Making user with ID ${user.UId} an admin`);
+    router.refresh();
+
+  };
+
+  const handleDeleteUser = (user: User) => {
+    deleteUser(user);
+    alert(`Deleted user with ID ${user.UId}`);
+    // Optionally, you can refresh the page or update state after deletion.
+    router.refresh();
   };
 
   return (
@@ -76,10 +88,19 @@ export function MembersTable({ users, pagination }: MembersTableProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleMakeAdmin(user.id)}
+                      onClick={() => handleMakeAdmin(user)}
                       disabled={user.role === "admin"} // Disable if the user is already an admin
+                      className="mr-2"
                     >
                       Make Admin
+                    </Button>
+                    <Button className="bg-red-500"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteUser(user)}
+                      disabled={user.role === "admin"} // Disable delete button for admin users
+                    >
+                      Delete User
                     </Button>
                   </TableCell>
                 </TableRow>

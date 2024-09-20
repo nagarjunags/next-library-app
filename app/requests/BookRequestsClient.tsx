@@ -62,8 +62,8 @@ export default function BookRequestsClient({
     isbNo: string,
     startTransition: TransitionStartFunction
   ) => {
+   
     setUpdating(requestId);
-
     startTransition(async () => {
       const result = await updateRequestStatus(
         requestId,

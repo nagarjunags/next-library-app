@@ -64,7 +64,7 @@ const ProfilePage = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
-      <Card style={{ width: '50%' }}  className=" max-w-md bg-white shadow-xl rounded-2xl overflow-hidden">
+      <Card style={{ width: '50%' }} className="max-w-md bg-white shadow-xl rounded-2xl overflow-hidden">
         <CardHeader className="relative pb-0">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 h-24"></div>
           <motion.div
@@ -97,9 +97,11 @@ const ProfilePage = () => {
             )}
           </CardTitle>
           <p className="text-blue-600 text-center text-sm mb-4">{session?.user?.email}</p>
-          <div className="flex justify-between space-x-4">
+
+          {/* Padding added to the parent div */}
+          <div className="flex justify-between space-x-4 px-4">
             {/* Phone Number */}
-            <div className="flex flex-col items-center  space-y-1">
+            <div className="flex flex-col items-center space-y-1">
               <Label htmlFor="phoneNum" className="text-sm font-medium text-gray-600">
                 Phone Number
               </Label>
@@ -120,7 +122,7 @@ const ProfilePage = () => {
             </div>
 
             {/* Date of Birth */}
-            <div className="flex flex-col items-center justify-center  ">
+            <div className="flex flex-col items-center justify-center">
               <Label htmlFor="DOB" className="text-sm font-medium text-gray-600">
                 Date of Birth
               </Label>
@@ -144,17 +146,11 @@ const ProfilePage = () => {
         </CardContent>
         <CardFooter className="flex justify-center pb-4 pt-2">
           {editMode ? (
-            <Button
-              onClick={handleSave}
-              // className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105"
-            >
+            <Button onClick={handleSave}>
               <Save className="mr-2 h-4 w-4" /> Save Changes
             </Button>
           ) : (
-            <Button
-              onClick={handleEdit}
-              // className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105"
-            >
+            <Button onClick={handleEdit}>
               <Edit className="mr-2 h-4 w-4" /> Edit Profile
             </Button>
           )}

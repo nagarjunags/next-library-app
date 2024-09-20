@@ -62,8 +62,8 @@ export default function BookRequestsClient({
     isbNo: string,
     startTransition: TransitionStartFunction
   ) => {
+   
     setUpdating(requestId);
-
     startTransition(async () => {
       const result = await updateRequestStatus(
         requestId,
@@ -85,7 +85,8 @@ export default function BookRequestsClient({
   const isAdmin = session?.user?.role === "admin";
 
   return (
-    <Card className="m-4">
+    <Card className="m-4 mx-auto" style={{ width: '80%', maxWidth: '10000px' }}>
+
       <CardHeader>
         <CardTitle className="text-2xl font-bold mb-4">Book Requests</CardTitle>
       </CardHeader>
@@ -95,7 +96,7 @@ export default function BookRequestsClient({
             <TableHeader>
               <TableRow>
                 {isAdmin && <TableHead>User ID</TableHead>}
-                <TableHead>ISBN No</TableHead>
+                <TableHead>Book Title</TableHead>
                 <TableHead>Request Date</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
@@ -109,7 +110,7 @@ export default function BookRequestsClient({
                       {updating === request.id && "Updating..."}
                     </TableCell>
                   )}
-                  <TableCell>{request.isbnNo}</TableCell>
+                  <TableCell>{request.bookTitle}</TableCell>
                   <TableCell>
                     {new Date(request.reqDate).toLocaleDateString()}
                   </TableCell>

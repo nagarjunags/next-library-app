@@ -34,6 +34,7 @@ export const authOptions = {
             phoneNum: "00",
             password: "null",
             email: profile.email,
+            role:"user"
           };
           await userRepo.create(data);
         }

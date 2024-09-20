@@ -4,7 +4,7 @@ import { Requestsrepository } from "@/db/requests.repository";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 
-export async function borrowBookAction(isbnNo: string) {
+export async function borrowBookAction(isbnNo: string, title: string) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -17,6 +17,7 @@ export async function borrowBookAction(isbnNo: string) {
     const requestData = {
       uId: session.user.id,
       isbnNo: isbnNo,
+      bookTitle: title,
     };
 
     // Create a new book request in the database

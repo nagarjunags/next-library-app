@@ -5,6 +5,7 @@ import { motion } from "framer-motion"; // For animations if needed
 import { markAsReturned } from "./actions"; // Server action for marking as returned
 import { ChevronLeft, ChevronRight } from "lucide-react"; // Icons for pagination
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 
 export default function TransactionsClient({
   transactions,
@@ -32,6 +34,7 @@ export default function TransactionsClient({
     url.searchParams.set("page", newPage.toString());
     window.location.href = url.toString();
   };
+  // console.log(transactions);
 
   const handleReturn = async (
     transactionId: number,
@@ -52,11 +55,11 @@ export default function TransactionsClient({
 
     setUpdating(null);
   };
-
+  // console.log(transactions[0].issueddate);
   const isAdmin = session?.user?.role === "admin";
 
   return (
-    <Card className="m-4">
+    <Card className="m-4 mx-auto" style={{ width: "80%", maxWidth: "10000px" }}>
       <CardHeader>
         <CardTitle className="text-2xl font-bold mb-4">Transactions</CardTitle>
       </CardHeader>
@@ -67,7 +70,7 @@ export default function TransactionsClient({
               <TableRow>
                 {isAdmin && <TableHead>User ID</TableHead>}
                 <TableHead>ISBN No</TableHead>
-                <TableHead>Borrow Date</TableHead>
+                <TableHead>Issued Date</TableHead>
                 <TableHead>Return Status</TableHead>
                 {isAdmin && <TableHead>Action</TableHead>}
               </TableRow>
@@ -76,9 +79,12 @@ export default function TransactionsClient({
               {transactions.map((transaction) => (
                 <TableRow key={transaction.id}>
                   {isAdmin && <TableCell>{transaction.userId}</TableCell>}
-                  <TableCell>{transaction.isbnNo}</TableCell>
+                  <TableCell>{transaction.bookId}</TableCell>
                   <TableCell>
-                    {new Date(transaction.borrowDate).toLocaleDateString()}
+                    {format(
+                      new Date(" Sep 12 2024 (India Standard Time)"),
+                      "yyyy-MM-dd "
+                    )}
                   </TableCell>
                   <TableCell>
                     {transaction.returned ? (
@@ -92,7 +98,7 @@ export default function TransactionsClient({
                       {!transaction.returned && (
                         <Button
                           onClick={() =>
-                            handleReturn(transaction.id, React.startTransition)
+                            handleReturn(transaction.transactionId, React.startTransition)
                           }
                           disabled={updating === transaction.id}
                           className="bg-blue-600 hover:bg-blue-700"

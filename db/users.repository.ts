@@ -72,6 +72,7 @@ export class UserRepository {
   }
 
   async update(id: number, updatedData: any) {
+    console.log(updatedData);
     const db = await getDb();
     await db.update(user).set(updatedData).where(eq(user.UId, id));
     const result = await db
@@ -85,7 +86,7 @@ export class UserRepository {
   // New method to delete a user
   async delete(id: number) {
     const db = await getDb();
-    // await db.delete().from(user).where(eq(user.UId, id));
+    await db.delete(user).where(eq(user.UId, id));
     return { success: true };
   }
 

@@ -23,6 +23,7 @@ export const book = mysqlTable("books", {
   numofPages: int("numofPages").notNull(),
   totalNumberOfCopies: int("totalNumberOfCopies").notNull(),
   availableNumberOfCopies: int("availableNumberOfCopies").default(null),
+  coverImage: varchar("coverImage", { length: 500 }).default(null),
 });
 
 export const user = mysqlTable("users", {
@@ -61,4 +62,5 @@ export const booksRequestsTable = mysqlTable("books_requests", {
   isbnNo: varchar("isbnNo", { length: 15 }).notNull(),
   issuedDate: date("issuedDate").default(null), // Nullable
   status: tinyint("status").default(null), // Nullable
+  bookTitle: varchar("bookTitle", { length: 500 }).default(null),
 });

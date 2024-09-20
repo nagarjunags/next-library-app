@@ -180,20 +180,47 @@ export class TransactionRepository {
     };
   }
 
+  async getById(id: number) {
+    const db = await getDb();
+    // console.log(id);
+    const result = await db
+      .select()
+      .from(transaction)
+      .where(eq(transaction.transactionId,id))
+      .limit(1)
+      .execute();
+
+    // Drizzle returns results as an array
+    return result[0];
+  }
+
   /**
    * Mark a transaction as returned by setting `returned` to `true`.
    */
   async markReturned(transactionId: number) {
+    console.log(transactionId);
     const db = await getDb();
-    // const result = await db
-    //   .update(transaction)
-    //   .set({
-    //     isReturned: 1, // Mark as returned
-    //     returnDate: new Date().toISOString(), // Set the current date as return date
-    //   })
-    //   .where(eq(transaction.transactionId, transactionId))
-    //   .execute();
+    const req = await this.getById(transactionId);
+    const data = {
+      ...req,
+      isReturned:1,
+      returnDate: new Date().toISOString()
+    }
+    console.log(data);
+    try{
 
-    return { success: true };
+      const result = await db
+      .update(transaction)
+      .set(data)
+      .where(eq(transaction.transactionId, transactionId))
+      .execute();
+  
+      return { success: true };
+    }
+    catch(error)
+    {
+      return {success: false}
+    }
+  
   }
 }

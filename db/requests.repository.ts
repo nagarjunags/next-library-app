@@ -12,6 +12,7 @@ export class Requestsrepository {
    *
    */
   async create(borrowRequest) {
+    console.table(borrowRequest);
     const db = await getDb();
 
     const insertId = (
@@ -86,12 +87,19 @@ export class Requestsrepository {
     const db = await getDb();
     console.log("REPO:", requestId, newStatus);
 
+    // Convert requestId to BigInt
+    const req = await this.getById(BigInt(requestId));
+    const data = {
+      ...req,
+      status: newStatus,
+    };
+
     try {
       // Update the status of the book request
-      // await db
-      //   .update(booksRequestsTable)
-      //   .set({ status: newStatus })
-      //   .where(eq(booksRequestsTable.id, requestId));
+      await db
+        .update(booksRequestsTable)
+        .set(data)
+        .where(eq(booksRequestsTable.id, BigInt(requestId))); // Convert requestId to BigInt
 
       return { success: true };
     } catch (error) {

@@ -22,7 +22,7 @@ export async function updateRequestStatus(
   const transactionRepo = new TransactionRepository();
 
   const book = await bookRepo.getByIsbn(isbNo);
-  console.log("ee", typeof isbNo);
+
   const today = new Date();
   const returnDate = new Date(today.setDate(today.getDate() + 15))
     .toISOString()

@@ -2,15 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -52,6 +45,11 @@ export function MembersTable({ users, pagination }: MembersTableProps) {
     router.push(`/members?page=${newPage}&limit=${pagination.limit}`);
   };
 
+  const handleMakeAdmin = (userId: string) => {
+    // Logic for making the user an admin
+    alert(`Making user with ID ${userId} an admin`);
+  };
+
   return (
     <Card className="m-4 mx-auto" style={{ width: "80%", maxWidth: "10000px" }}>
       <CardHeader>
@@ -75,26 +73,14 @@ export function MembersTable({ users, pagination }: MembersTableProps) {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            navigator.clipboard.writeText(user.id)
-                          }
-                        >
-                          Copy user ID
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>View user details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit user</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleMakeAdmin(user.id)}
+                      disabled={user.role === "admin"} // Disable if the user is already an admin
+                    >
+                      Make Admin
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

@@ -28,6 +28,7 @@ export interface Book {
   totalNumberOfCopies: number;
   availableNumberOfCopies: number;
   coverImage: string;
+  price: number;  // Added price field
 }
 
 interface BookCardProps {
@@ -160,13 +161,16 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               <span className="font-medium">Available:</span>{" "}
               {book.availableNumberOfCopies}/{book.totalNumberOfCopies}
             </p>
+            <p className="text-green-500 text-lg font-semibold"> {/* Updated styles here */}
+              <span className="font-medium">Price:</span> ₹{book.price || 200}
+            </p>
           </div>
         </CardContent>
         <CardFooter className="p-4 flex justify-between">
           {session && (
             <Button
               onClick={handleBorrow}
-              className="bg-blue-200  flex-1 mr-2  text-primary-foreground hover:bg-primary/90"
+              className="bg-blue-200 flex-1 mr-2 text-primary-foreground hover:bg-primary/90"
             >
               <Book className="mr-2 h-4 w-4" /> Borrow
             </Button>

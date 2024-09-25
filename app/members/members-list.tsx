@@ -1,11 +1,11 @@
-//@/app/members/members-list.tsx
+// //@/app/members/members-list.tsx
 
-"use server";
+// "use server";
 
-import { UserRepository } from "@/db/users.repository";
+// import { UserRepository } from "@/db/users.repository";
 
-const userRepo = new UserRepository();
+// const userRepo = new UserRepository();
 
-export async function getMembers() {
-  return await userRepo.list({ limit: 10, offset: 0 });
-}
+// export async function getMembers() {
+//   return await userRepo.list({ limit: 10, offset: 0 });
+// }

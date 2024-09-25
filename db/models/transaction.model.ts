@@ -12,3 +12,9 @@ export interface ITransaction extends ITransactionBase {
   isReturned: boolean;
   fine: number;
 }
+export interface IRequest
+{
+  bookId:number;
+  userId:number;
+ 
+}

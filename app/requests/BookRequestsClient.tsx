@@ -56,32 +56,36 @@ export default function BookRequestsClient({
     window.location.href = url.toString();
   };
 
+
   const handleStatusChange = async (
-    requestId: number,
+    transactionId: number,
     newStatus: string,
-    isbNo: string,
+    bookId: number,
+    userId:number,
     startTransition: TransitionStartFunction
   ) => {
    
-    setUpdating(requestId);
+    setUpdating(transactionId);
     startTransition(async () => {
       const result = await updateRequestStatus(
-        requestId,
+        transactionId,
         parseInt(newStatus),
-        isbNo
+        bookId,
+        userId
       );
 
       if (result.success) {
         alert("Status updated successfully");
         window.location.reload();
       } else {
-        alert(`Failed to update status: ${result.error}`);
+        alert(`Failed to update status: `);
       }
     });
 
     setUpdating(null);
   };
 
+  console.log(requests);
   const isAdmin = session?.user?.role === "admin";
 
   return (
@@ -106,7 +110,7 @@ export default function BookRequestsClient({
                 <TableRow key={request.id}>
                   {isAdmin && (
                     <TableCell>
-                      {request.uId}
+                      {request.userId}
                       {updating === request.id && "Updating..."}
                     </TableCell>
                   )}
@@ -118,19 +122,20 @@ export default function BookRequestsClient({
                     {isAdmin ? (
                       <Select
                         value={
-                          request.status === null
+                          request.reqStatus === null
                             ? "pending"
-                            : request.status.toString()
+                            : request.reqStatus.toString()
                         }
                         onValueChange={(value) =>
                           handleStatusChange(
-                            request.id,
+                            request.transactionId,
                             value,
-                            request.isbnNo,
+                            request.bookId,
+                            request.userId,
                             React.startTransition
                           )
                         }
-                        disabled={updating === request.id}
+                        disabled={request.reqStatus === 0 ||request.reqStatus === 1 || updating === request.id}
                       >
                         <SelectTrigger className="w-[180px]">
                           <SelectValue placeholder="Select status" />
@@ -143,9 +148,9 @@ export default function BookRequestsClient({
                       </Select>
                     ) : (
                       <span>
-                        {request.status === null
+                        {request.reqStatus === null
                           ? "Pending"
-                          : request.status === 1
+                          : request.reqStatus === 1
                           ? "Approved"
                           : "Rejected"}
                       </span>

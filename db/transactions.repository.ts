@@ -62,7 +62,7 @@ import { getDb } from "./drizzle/migrate";
 import { MySqlQueryGenerator, SqlClause } from "./libs/mysql-query-generator";
 import { WhereExpression } from "./libs/types";
 import { IBook } from "./models/books.model";
-import { ITransaction, ITransactionBase } from "./models/transaction.model";
+import { ITransaction, ITransactionBase,IRequest } from "./models/transaction.model";
 import { MySqlTransactionPoolConnection } from "./db-connection";
 import { UserRepository } from "./users.repository";
 import { eq, sql, like, or, and } from "drizzle-orm";
@@ -152,6 +152,13 @@ export class TransactionRepository {
     return null;
   }
 
+
+  async createRequest(request:IRequest)
+  {
+    const db = await getDb();
+    await db.insert(transaction).values(request);//.$returningId()[0].id;
+  }
+
   async list(
     userId: number,
     options: { limit: number; offset: number; orderBy?: string }
@@ -165,7 +172,7 @@ export class TransactionRepository {
     // .orderBy(options.orderBy || transaction.issueddate, "desc");
 
     // Filter by userId only if userId is not 0 (for admin purposes)
-    if (userId !== 0) {
+    if (userId !== 0 ) {
       query.where(eq(transaction.userId, userId));
     }
 
@@ -222,5 +229,28 @@ export class TransactionRepository {
       return {success: false}
     }
   
+  }
+
+  async update(id:number,data:any)
+  {
+    const db = await getDb();
+try{
+  const result = await db
+      .update(transaction)
+      .set(data)
+      .where(eq(transaction.transactionId, id))
+      .execute();
+  return { success: true };
+    }
+    catch(error)
+    {
+      return {success: false}
+    }
+    
+  }
+
+
+  async handleBorrow(data:any){
+    //step
   }
 }

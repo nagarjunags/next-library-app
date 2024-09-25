@@ -45,6 +45,7 @@ const Navbar = () => {
     { href: "/requests", label: "Requests", authRequired: true },
     { href: "/transactions", label: "Transactions", authRequired: true },
     { href: "/members", label: "Members", adminOnly: true },
+    { href:"/professors",label:"Professors",authRequired:true},
   ];
 
   return (

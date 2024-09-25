@@ -39,7 +39,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const handleBorrow = async () => {
     toast.promise(
-      borrowBookAction(book.isbnNo, book.title),
+      borrowBookAction(book.id, book.title),
       {
         loading: 'Borrowing book...',
         success: (result) => result.success ? `Successfully borrowed "${book.title}"` : `Failed to borrow: ${result.error}`,

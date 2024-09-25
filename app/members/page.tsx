@@ -1,3 +1,4 @@
+//@/app/members./page.tsx
 import { fetchPaginatedMembers } from "./actions";
 import { MembersTable } from "@/components/MembersTable";
 

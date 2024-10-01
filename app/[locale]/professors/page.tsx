@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { listProfessors, checkInvitationStatus,deductcredit } from './actions';
+import { listProfessors, checkInvitationStatus, deductcredit } from './actions';
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import BuyProduct from '@/components/razorpay/BuyProduct';
-import { InlineWidget,useCalendlyEventListener } from "react-calendly";
+import { InlineWidget, useCalendlyEventListener } from "react-calendly";
 import Link from 'next/link';
 import {
   ColumnDef,
@@ -15,7 +15,7 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight, Plus, RefreshCw } from "lucide-react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, Plus, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -41,7 +41,6 @@ async function deductCredits() {
   await deductcredit();
   console.log("deducting the credits");
   window.location.reload();
-
 }
 
 export default function ProfessorsPage() {
@@ -55,7 +54,8 @@ export default function ProfessorsPage() {
   const { data: session } = useSession(); 
   const [meetingScheduled, setMeetingScheduled] = useState(false);
   const { locale } = useParams();
-
+  const [checkingStatus, setCheckingStatus] = useState<number | null>(null);
+  const [bookingAppointment, setBookingAppointment] = useState<number | null>(null);
 
   const handleEventScheduled = () => {
     setMeetingScheduled(true);
@@ -87,6 +87,7 @@ export default function ProfessorsPage() {
   };
 
   const handleCheckStatus = async (professor: Professor) => {
+    setCheckingStatus(professor.id);
     try {
       const result = await checkInvitationStatus(professor.id, professor.email);
       if (result.status === 'accepted') {
@@ -95,16 +96,19 @@ export default function ProfessorsPage() {
     } catch (error) {
       console.error("Error checking invitation status", error);
       toast.error("Failed to check invitation status");
+    } finally {
+      setCheckingStatus(null);
     }
   };
 
   const handleBookAppointment = (professor: Professor) => {
+    setBookingAppointment(professor.id);
     setSelectedProfessor(professor);
     setShowCalendly(true);
     setTimeout(() => {
       appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
+      setBookingAppointment(null);
     }, 100);
-    
   };
 
   const columns: ColumnDef<Professor>[] = [
@@ -160,7 +164,11 @@ export default function ProfessorsPage() {
             variant="outline"
             size="sm"
             className="bg-green-500 text-white hover:bg-green-600 transition-colors duration-200"
+            disabled={bookingAppointment === professor.id}
           >
+            {bookingAppointment === professor.id ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
             Book Appointment
           </Button>
         ) : (
@@ -169,8 +177,13 @@ export default function ProfessorsPage() {
             variant="outline"
             size="sm"
             className="bg-yellow-500 text-white hover:bg-yellow-600 transition-colors duration-200"
+            disabled={checkingStatus === professor.id}
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
+            {checkingStatus === professor.id ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             Check Status
           </Button>
         );
@@ -206,12 +219,16 @@ export default function ProfessorsPage() {
     <Card className="w-full shadow-lg">
       <CardHeader className="bg-gray-50 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
         <CardTitle className="text-2xl font-bold text-gray-800">Professors</CardTitle>
+
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+        {session?.user?.role === "admin" && (
           <Link href={`/${locale}/professors/add`}>
             <Button className="bg-green-500 hover:bg-green-600 text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Professor
             </Button>
           </Link>
+        )}
+        
           <div className="flex items-center space-x-2">
             <span className="text-sm font-medium text-gray-700">Credits:</span>
             <span className="text-sm font-bold text-blue-600">{session?.user?.credits}</span>

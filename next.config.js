@@ -1,9 +1,12 @@
+const createNextIntlPlugin = require('next-intl/plugin');
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     domains: ["lh3.googleusercontent.com", "res.cloudinary.com"], // Added Cloudinary domain
   },
-  // Add this to handle the placeholder SVG
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -13,4 +16,5 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Export both the nextIntl and other nextConfig settings
+module.exports = withNextIntl(nextConfig);

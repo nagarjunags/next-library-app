@@ -1,19 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { listProfessors } from './actions';
+import { listProfessors, checkInvitationStatus,deductcredit } from './actions';
 import { useSession } from "next-auth/react";
-
+import { useParams } from "next/navigation";
+import BuyProduct from '@/components/razorpay/BuyProduct';
+import { InlineWidget,useCalendlyEventListener } from "react-calendly";
+import Link from 'next/link';
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
   getSortedRowModel,
-  SortingState,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -24,106 +26,85 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-declare global {
-  interface Window {
-    Calendly: {
-      initInlineWidget: (options: {
-        url: string;
-        parentElement: Element;
-        prefill?: Record<string, any>;
-        utm?: Record<string, any>;
-      }) => void;
-    };
-  }
-}
-
+import { toast } from 'react-hot-toast';
 
 type Professor = {
   id: number;
   name: string;
   department: string;
   bio: string;
-  calendlyEventLink: string;
+  email: string;
+  calendlyEventLink: string | null;
 };
 
+async function deductCredits() {
+  await deductcredit();
+  console.log("deducting the credits");
+  window.location.reload();
 
+}
 
 export default function ProfessorsPage() {
+  const appointmentRef = useRef<HTMLDivElement | null>(null);
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
   const [showCalendly, setShowCalendly] = useState(false);
-  const appointmentRef = useRef<HTMLDivElement | null>(null);
-  const calendlyRef = useRef<HTMLDivElement | null>(null);
   const { data: session } = useSession(); 
+  const [meetingScheduled, setMeetingScheduled] = useState(false);
+  const { locale } = useParams();
+
+
+  const handleEventScheduled = () => {
+    setMeetingScheduled(true);
+    deductCredits();
+  };
+
+  useCalendlyEventListener({
+    onEventScheduled: handleEventScheduled,
+  });
 
   useEffect(() => {
-    const fetchProfessors = async () => {
-      try {
-        const data = await listProfessors({
-          limit: pagination.pageSize,
-          offset: pagination.pageIndex * pagination.pageSize
-        });
-        console.log("Fetched Professors: ", data);
-        setProfessors(data);
-      } catch (error) {
-        console.error("Failed to load professors", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProfessors();
   }, [pagination.pageIndex, pagination.pageSize]);
 
-  useEffect(() => {
-    const loadCalendlyScript = () => {
-      const script = document.createElement('script');
-      script.src = 'https://assets.calendly.com/assets/external/widget.js';
-      script.async = true;
-      document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    };
-
-    loadCalendlyScript();
-  }, []);
-
-  useEffect(() => {
-    if (showCalendly && selectedProfessor && selectedProfessor.calendlyEventLink && calendlyRef.current) {
-      if (window.Calendly) {
-        window.Calendly.initInlineWidget({
-          url: selectedProfessor.calendlyEventLink,
-          parentElement: calendlyRef.current,
-          prefill: {
-            email: session?.user?.email,
-            name: session?.user?.name,
-          },
-          utm: {
-            utm_campaign: 'GoogleMeetIntegration', 
-            utm_medium: 'GoogleMeet',
-          },
-        });
-      }
+  const fetchProfessors = async () => {
+    try {
+      setLoading(true);
+      const data = await listProfessors({
+        limit: pagination.pageSize,
+        offset: pagination.pageIndex * pagination.pageSize
+      });
+      setProfessors(data);
+    } catch (error) {
+      console.error("Failed to load professors", error);
+      toast.error("Failed to load professors");
+    } finally {
+      setLoading(false);
     }
-  }, [showCalendly, selectedProfessor, session]);
+  };
+
+  const handleCheckStatus = async (professor: Professor) => {
+    try {
+      const result = await checkInvitationStatus(professor.id, professor.email);
+      if (result.status === 'accepted') {
+        toast.success(`${professor.name}'s Calendly link is now available`);
+      } 
+    } catch (error) {
+      console.error("Error checking invitation status", error);
+      toast.error("Failed to check invitation status");
+    }
+  };
 
   const handleBookAppointment = (professor: Professor) => {
     setSelectedProfessor(professor);
-    setShowCalendly(false);
-    appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleConfirmAppointment = () => {
-    if (selectedProfessor?.calendlyEventLink) {
-      setShowCalendly(true);
-    } else {
-      console.error("No valid Calendly link found for the selected professor.");
-    }
+    setShowCalendly(true);
+    setTimeout(() => {
+      appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    
   };
 
   const columns: ColumnDef<Professor>[] = [
@@ -155,6 +136,11 @@ export default function ProfessorsPage() {
       ),
     },
     {
+      accessorKey: "email",
+      header: "Email",
+      cell: ({ row }) => <div>{row.getValue("email")}</div>,
+    },
+    {
       accessorKey: "bio",
       header: "Bio",
       cell: ({ row }) => (
@@ -164,17 +150,28 @@ export default function ProfessorsPage() {
       ),
     },
     {
-      id: "actions",
+      id: "calendly",
+      header: "Calendly Status",
       cell: ({ row }) => {
         const professor = row.original;
-        return (
+        return professor.calendlyEventLink ? (
           <Button
             onClick={() => handleBookAppointment(professor)}
             variant="outline"
             size="sm"
-            className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
+            className="bg-green-500 text-white hover:bg-green-600 transition-colors duration-200"
           >
             Book Appointment
+          </Button>
+        ) : (
+          <Button
+            onClick={() => handleCheckStatus(professor)}
+            variant="outline"
+            size="sm"
+            className="bg-yellow-500 text-white hover:bg-yellow-600 transition-colors duration-200"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Check Status
           </Button>
         );
       },
@@ -207,8 +204,20 @@ export default function ProfessorsPage() {
 
   return (
     <Card className="w-full shadow-lg">
-      <CardHeader className="bg-gray-50">
+      <CardHeader className="bg-gray-50 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
         <CardTitle className="text-2xl font-bold text-gray-800">Professors</CardTitle>
+        <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <Link href={`/${locale}/professors/add`}>
+            <Button className="bg-green-500 hover:bg-green-600 text-white">
+              <Plus className="mr-2 h-4 w-4" /> Add Professor
+            </Button>
+          </Link>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium text-gray-700">Credits:</span>
+            <span className="text-sm font-bold text-blue-600">{session?.user?.credits}</span>
+          </div>
+          <BuyProduct />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border border-gray-200 overflow-hidden">
@@ -258,51 +267,36 @@ export default function ProfessorsPage() {
           <div className="space-x-2">
             <Button
               variant="outline"
-              size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 text-sm"
             >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Previous
+              <ChevronLeft className="mr-2 h-4 w-4" /> Previous
             </Button>
             <Button
               variant="outline"
-              size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 text-sm"
             >
-              Next
-              <ChevronRight className="h-4 w-4 ml-2" />
+              Next <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </div>
       </CardContent>
-      <div ref={appointmentRef}>
-        {selectedProfessor && (
-          <div className="bg-gray-100 py-6 px-4">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              Confirm Appointment with {selectedProfessor.name}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Department: {selectedProfessor.department}
-            </p>
-            <Button
-              onClick={handleConfirmAppointment}
-              variant="outline"
-              className="mb-6 bg-blue-500 text-black hover:bg-blue-600 transition-colors duration-200"
-            >
-              Confirm Appointment
-            </Button>
-            {showCalendly && (
-              <div ref={calendlyRef} className="w-full" style={{ height: '800px', overflow: 'hidden' }}>
-                {/* Calendly widget will be injected here */}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      {showCalendly && selectedProfessor && (
+        <div ref={appointmentRef} className="mt-4 p-4 bg-gray-50 rounded-b-lg">
+          <h2 className="text-xl font-semibold mb-4">Book Appointment with {selectedProfessor.name}</h2>
+          <InlineWidget
+            url={selectedProfessor.calendlyEventLink}
+            styles={{ height: '600px' }}
+            prefill={{
+              email: session?.user?.email,
+              name: session?.user?.name,
+            }}
+          />
+        </div>
+      )}
     </Card>
   );
 }

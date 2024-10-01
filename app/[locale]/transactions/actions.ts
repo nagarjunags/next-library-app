@@ -15,7 +15,7 @@ export async function markAsReturned(transactionId: number) {
   try {
     // Update the transaction to mark it as returned
     // console.log("--->",transactionId);
-    const result = await transactionRepo.markReturned(transactionId);
+    const result = await transactionRepo.handleReturn(transactionId);
     if (result.success) {
       return { success: true };
     } else {

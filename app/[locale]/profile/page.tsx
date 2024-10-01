@@ -1,6 +1,8 @@
+//@/app/[locale]/profile/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
+import BuyProduct from '@/components/razorpay/BuyProduct'
 import { getUserProfile, updateUserProfile, getScheduledEvents } from "./actions";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
@@ -86,6 +88,13 @@ export default function ProfilePage() {
     toast.success("Event rescheduled successfully!");
   };
 
+  const handleBuyMembership = () => {
+    // You could add payment logic here or redirect to a membership payment page.
+    // window.location.href = "/membership/payment";
+    toast.success("Redirecting to buy membership!");
+    // Example: router.push('/membership/payment');
+  };
+
   if (status === "loading" || loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -119,6 +128,7 @@ export default function ProfilePage() {
     <div className="flex justify-center items-start min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-8">
       <Card className="w-full max-w-4xl bg-white shadow-xl rounded-2xl overflow-hidden">
         <CardHeader className="relative pb-0">
+          
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 h-32"></div>
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
@@ -128,11 +138,13 @@ export default function ProfilePage() {
           >
             <div className="w-32 h-32 rounded-full bg-white shadow-lg flex items-center justify-center text-4xl font-bold text-blue-500">
               {profile.name ? profile.name[0].toUpperCase() : 'N'}
+              
             </div>
           </motion.div>
         </CardHeader>
         <CardContent className="pt-20 px-8">
           <CardTitle className="text-3xl font-bold text-center mb-2 text-gray-800">
+       
             {editMode ? (
               <Input
                 name="name"
@@ -200,6 +212,26 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          <CardFooter className="flex flex-col items-center pb-8 pt-6">
+            {editMode ? (
+              <Button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg">
+                <Save className="mr-2 h-5 w-5" /> Save Changes
+              </Button>
+            ) : (
+              <Button onClick={handleEdit} className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg">
+                <Edit className="mr-2 h-5 w-5" /> Edit Profile
+              </Button>
+            )}
+
+            {/* Buy Membership Button */}
+            <Button
+              onClick={handleBuyMembership}
+              className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-3 rounded-full text-lg"
+            >
+              Buy Membership
+            </Button>
+          </CardFooter>
+
           <div className="mt-12">
             <h3 className="text-2xl font-semibold text-center text-gray-800 mb-6">Scheduled Events</h3>
             {scheduledEvents.length > 0 ? (
@@ -214,21 +246,10 @@ export default function ProfilePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-600">No scheduled events found.</p>
+              <p className="text-gray-600 text-center">No upcoming events scheduled.</p>
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center pb-8 pt-6">
-          {editMode ? (
-            <Button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg">
-              <Save className="mr-2 h-5 w-5" /> Save Changes
-            </Button>
-          ) : (
-            <Button onClick={handleEdit} className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg">
-              <Edit className="mr-2 h-5 w-5" /> Edit Profile
-            </Button>
-          )}
-        </CardFooter>
       </Card>
     </div>
   );

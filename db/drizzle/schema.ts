@@ -71,6 +71,15 @@ export const professor = mysqlTable("professors", {
   name: varchar("name", { length: 50 }).notNull(),
   department: varchar("department", { length: 50 }).notNull(),
   bio: varchar("bio", { length: 150 }).notNull(),
-  calendlyEventLink: varchar("calendlyeventlink", { length: 500 }).notNull(),
+  calendlyEventLink: varchar("calendlyeventlink", { length: 500 }).default(null),
+  email:varchar("email",{length:250}).default(null),
 });
 
+export const razorpayTransactions = mysqlTable("razorpay_transactions", {
+  id: int("id").primaryKey().autoincrement(),
+  orderId: varchar("order_id", { length: 255 }).notNull(),
+  paymentId: varchar("payment_id", { length: 255 }).notNull(),
+  amount: int("amount").notNull(),
+  currency: varchar("currency", { length: 10 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

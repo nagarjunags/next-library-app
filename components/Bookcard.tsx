@@ -167,14 +167,20 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
           </div>
         </CardContent>
         <CardFooter className="p-4 flex justify-between">
-          {session && (
-            <Button
-              onClick={handleBorrow}
-              className="bg-blue-200 flex-1 mr-2 text-primary-foreground hover:bg-primary/90"
-            >
-              <Book className="mr-2 h-4 w-4" /> Borrow
-            </Button>
-          )}
+        {session && (
+  <Button
+    onClick={handleBorrow}
+    className={`flex-1 mr-2 text-primary-foreground 
+      ${book.availableNumberOfCopies > 0 
+        ? "bg-blue-200 hover:bg-primary/90" 
+        : "bg-red-500 cursor-not-allowed"}`}
+    disabled={book.availableNumberOfCopies <= 0}  // Disable if no copies are available
+  >
+    <Book className="mr-2 h-4 w-4" /> 
+    {book.availableNumberOfCopies > 0 ? "Borrow" : "Out Of Stock"}
+  </Button>
+)}
+
           {session?.user?.role === "admin" && (
             <Button 
               onClick={handleDelete}

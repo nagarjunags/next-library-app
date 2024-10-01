@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { makeUserAsAdmin,deleteUser } from "@/app/members/actions";
+import { makeUserAsAdmin,deleteUser } from "@/app/[locale]/members/actions";
 
 import {
   Table,

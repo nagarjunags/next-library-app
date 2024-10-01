@@ -51,13 +51,23 @@ export async function updateRequestStatus(
       return { success: true };
     }
 
-    let transactionData = await transactionRepo.getById(transactionId);
-    transactionData = {
-      ...transactionData,
-      issueddate:today,
-      dueDate:dueDate,
-      reqStatus:1,
+ 
+    try{
+      let transactionData = await transactionRepo.getById(transactionId);
+      transactionData = {
+        ...transactionData,
+        issueddate:today,
+        dueDate:dueDate,
+        reqStatus:1,
+      }
+
+      transactionRepo.handleBorrow(transactionData);
+      return { success: true };
     }
+    catch(error){
+      return { success: false };
+    }
+    
 
   // const data = {
   //   userId: session.user.id,

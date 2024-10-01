@@ -66,8 +66,11 @@ import { ITransaction, ITransactionBase,IRequest } from "./models/transaction.mo
 import { MySqlTransactionPoolConnection } from "./db-connection";
 import { UserRepository } from "./users.repository";
 import { eq, sql, like, or, and } from "drizzle-orm";
+import { book } from "./drizzle/library.schema";
+
 
 import mysql from "mysql2/promise";
+
 
 export class TransactionRepository {
   pool: mysql.Pool | null;
@@ -173,8 +176,12 @@ export class TransactionRepository {
 
     // Filter by userId only if userId is not 0 (for admin purposes)
     if (userId !== 0 ) {
-      query.where(eq(transaction.userId, userId));
-    }
+      query.where(
+        and(
+          eq(transaction.userId, userId),
+        )
+      );
+      
 
     const transactions = await query.execute();
 
@@ -183,8 +190,19 @@ export class TransactionRepository {
       pagination: {
         hasPrevious: options.offset > 0,
         hasNext: transactions.length === options.limit,
-      },
-    };
+        },
+      };
+    }
+    const transactions = await query.execute();
+
+    return {
+      items: transactions,
+      pagination: {
+        hasPrevious: options.offset > 0,
+        hasNext: transactions.length === options.limit,
+        },
+      };
+
   }
 
   async getById(id: number) {
@@ -230,7 +248,7 @@ export class TransactionRepository {
     }
   
   }
-
+  
   async update(id:number,data:any)
   {
     const db = await getDb();
@@ -250,7 +268,102 @@ try{
   }
 
 
-  async handleBorrow(data:any){
-    //step
+async handleBorrow(data: any) {
+  const db = await getDb();
+    // Step 1: Check the existence of the user
+    const user = await this.userRepo.getById(data.userId);
+    if (!user) {
+        throw new Error("USER NOT FOUND");
+    }
+
+    // Step 2: Check the existence of the book
+    let isbook = await this.bookRepo.getById(data.bookId);
+    if (!isbook || !isbook.availableNumberOfCopies) {
+        throw new Error("BOOK NOT AVAILABLE");
+    }
+
+    // Step 3: Handle the transaction with Drizzle ORM transaction handling
+    await db.transaction(async (tx) => {
+        // Decrement the number of available copies
+        isbook = {
+            ...isbook,
+            availableNumberOfCopies: isbook.availableNumberOfCopies - 1,
+        };
+        if(isbook.availableNumberOfCopies<0)
+        {
+          throw new Error("Book Not available!");
+        }
+
+        // decremet the available number of copies of the  borrowed book 
+        await tx.update(book).set(isbook).where(eq(book.id, BigInt(isbook.id)))
+  
+        data = {
+          ...data,
+          reqStatus:1,
+        }
+        // Update the transaction status
+        let thisTransaction = await tx
+        .update(transaction)
+        .set(data)
+        .where(eq(transaction.transactionId, data.transactionId))
+        .execute();
+        
+
+      return { success: true };
+       
+    });
+}
+
+async handleReturn(transactionId:number){
+
+  const db = await getDb();
+
+  let thisTransaction = await this.getById(transactionId);
+
+  let isbook = await this.bookRepo.getById(thisTransaction.bookId);
+  
+  //step 1: check the presence of boook in DB
+  if(!isbook)
+  {
+    throw new Error("Book Entry not present in DB");
   }
+
+  // step 2 : check the presence of the member in the DB
+
+  const ismember = await this.userRepo.getById(thisTransaction.userId);
+  if(!ismember)
+  {
+    throw new Error("Member details not present in the database");
+  }
+
+  // step 3 Perform the transaction:
+  await db.transaction(async (tx)=>{
+
+     // Increment the number of available copies
+     isbook = {
+      ...isbook,
+      availableNumberOfCopies: isbook.availableNumberOfCopies + 1,
+  };
+
+     // increment the available number of copies of the  borrowed book 
+     await tx.update(book).set(isbook).where(eq(book.id, BigInt(isbook.id)))
+
+     thisTransaction = {
+      ...thisTransaction,
+      isReturned:1
+    }
+    // Update the transaction status
+   await tx
+    .update(transaction)
+    .set(thisTransaction)
+    .where(eq(transaction.transactionId, thisTransaction.transactionId))
+    .execute();
+    
+  return { success: true };
+   
+  })
+
+ return { success: true };
+}
+
 }

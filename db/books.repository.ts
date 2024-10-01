@@ -149,7 +149,8 @@ export class BookRepository {
       .execute();
 
     // Drizzle returns results as an array
-    return result[0] as unknown as IBook;
+    return result[0] as unknown as IBook ?? null;
+
   }
   async getByIsbn(isbn: string) {
     const db = await getDb();
@@ -184,5 +185,18 @@ export class BookRepository {
 
     // Return the previously fetched record
     return recordToDelete[0] as unknown as IBook;
+  }
+
+
+  async update(id: number, updatedData: any) {
+    console.log(updatedData);
+    const db = await getDb();
+    await db.update(book).set(updatedData).where(eq(book.id, BigInt(id)));
+    const result = await db
+      .select()
+      .from(book)
+      .where(eq(book.id, BigInt(id)))
+      .limit(1);
+    return result[0] ?? null;
   }
 }

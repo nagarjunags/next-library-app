@@ -34,6 +34,7 @@ export const user = mysqlTable("users", {
   DOB: varchar("DOB", { length: 20 }).notNull(),
   email: varchar("email", { length: 255 }).unique().default(null), // Ensure email is unique and properly sized
   role: varchar("role", { length: 10 }).default(null),
+  credits:int("credits").default(0),
 });
 
 export const transaction = mysqlTable("transactions", {
@@ -75,4 +76,5 @@ export const professor = mysqlTable("professors", {
   department: varchar("department", { length: 50 }).notNull(),
   bio: varchar("bio", { length: 150 }).notNull(),
   calendlyEventLink: varchar("calendlyeventlink", { length: 500 }).notNull(),
+  email: varchar("email",{length:250}).default(null),
 });

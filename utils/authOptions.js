@@ -50,6 +50,7 @@ export const authOptions = {
       const userInDb = await userRepo.getByEmail(session.user.email);
       session.user.id = userInDb.UId;
       session.user.role = userInDb.role;
+      session.user.credits = userInDb.credits;
       return session;
     },
   },

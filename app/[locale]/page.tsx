@@ -1,6 +1,5 @@
-// app/page.tsx (client-side)
 "use client";
-
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import HomeClient from "@/components/HomeClient"; // Client Component
 import { fetchBooks } from "./homeAction"; // Import the server-side action
@@ -17,8 +16,6 @@ const Home = ({ searchParams }) => {
         search: searchParams.search || "",
         page: searchParams.page || "1",
       });
-      // console.log("hheerree");
-      // console.log(books);
       setBooks(books);
       setPagination(pagination);
     };

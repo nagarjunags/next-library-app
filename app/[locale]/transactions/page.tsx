@@ -29,11 +29,13 @@ const TransactionsList = async ({ searchParams }) => {
     id = 0; // Fetch all transactions
   }
 
-  const { items: transactions, pagination } = await transactionRepo.list(id, {
+  const { items: transaction, pagination } = await transactionRepo.list(id, {
     limit,
     offset,
     orderBy: "returned ASC", // Ensures non-returned books appear first
   });
+  const transactions = transaction.filter((transaction)=>
+    transaction.reqStatus ===1)
 
   return (
     <TransactionsClient

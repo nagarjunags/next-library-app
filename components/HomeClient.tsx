@@ -1,9 +1,7 @@
-// components/HomeClient.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { fetchBooks } from "@/app/homeAction"; // Import the server-side action
-
+import { fetchBooks } from "@/app/[locale]/homeAction"; // Import the server-side action
 import { useRouter, useSearchParams } from "next/navigation";
 import BookCard from "@/components/Bookcard";
 import AddBook from "@/components/addbook/Adbook";
@@ -19,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 interface HomeClientProps {
   books: BookType[];
@@ -31,42 +30,18 @@ const HomeClient: React.FC<HomeClientProps> = ({
   pagination,
   page,
 }) => {
-  console.log(initialBooks);
-
   const { data: session } = useSession();
   const [showAddBookModal, setShowAddBookModal] = useState(false);
   const [books, setBooks] = useState<BookType[]>(initialBooks);
   const [sortBy, setSortBy] = useState<"title" | "author">("title");
-  // const router = useRouter();
-  // const searchParams = useSearchParams();
-  // const query = searchParams.get("search") || "";
-  // const currentPage = parseInt(searchParams.get("page") || "1", 10);
-
-  // useEffect(() => {
-  //   const fetchBookss = async () => {
-  //     // const response = await fetch(
-  //     // `/api/search/recomendations?search=${encodeURIComponent(
-  //     //   query
-  //     // )}&page=${currentPage}`;
-  //     // );
-  //     // const data = await response.json();
-  //     // setBooks(data.books);
-  //     // const response =   async () => {
-  //     //   const { books, pagination } = await fetchBooks({
-  //     //     search: encodeURIComponent(query) || "",
-  //     //     page: currentPage.toString()|| "1",
-  //     //   });
-  //     // setBooks(books);
-
-  //     };
-  //   };
-
-  //   fetchBookss();
-  // }, [query, currentPage]);
+  const router = useRouter(); // Initialize the router
+  const [locale, setLocale] = useState("en");
+  const t = useTranslations("Index");
 
   const handleAddBookClick = () => {
     setShowAddBookModal(true);
   };
+
   const handleCloseModal = () => {
     setShowAddBookModal(false);
   };
@@ -79,32 +54,51 @@ const HomeClient: React.FC<HomeClientProps> = ({
     setBooks(sortedBooks);
   };
 
-  // const handleSearchResults = (searchResults: BookType[]) => {
-  //   setBooks(searchResults);
-  // };
+  // Function to handle language change
+  const handleLanguageChange = (newLocale: string) => {
+    console.log(newLocale);
+    setLocale(newLocale);
+    // Push to the router to change the URL with the new locale
+    router.push(`/${newLocale}`); // Update the URL with the new locale
+  };
+
+  // Effect to update translations when locale changes
+  useEffect(() => {
+    // Trigger a re-render for the translations
+    t("someKey"); // This is a hack to force the re-evaluation of translations
+  }, [locale]);
 
   return (
     <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20 mb-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
         <div className="text-center">
           <h1 className="text-5xl font-extrabold text-white sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">
-            Discover Your Next Read
+            {t("discoverNextRead")}
           </h1>
           <p className="my-6 text-xl text-blue-100">
-            Explore our vast collection by author, title, or genre...
+            {t("exploreCollection")}
           </p>
+        </div>
+
+        <div className="mt-4 mb-4">
+          <label htmlFor="language-select" className="text-white">
+            {t("selectLanguage")}:
+          </label>
+          <select
+            id="language-select"
+            value={locale}
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            className="ml-2 p-2 rounded"
+          >
+            <option value="en">English</option>
+            <option value="kn">ಕನ್ನಡ</option>
+          </select>
         </div>
 
         <Search />
 
         <div className="w-full flex justify-between items-center mt-6">
           <DropdownMenu>
-            {/* <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="bg-white text-blue-600">
-                Sort by {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}{" "}
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger> */}
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleSort("title")}>
                 Title
@@ -135,7 +129,7 @@ const HomeClient: React.FC<HomeClientProps> = ({
 
         {showAddBookModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg relative  border-black">
+            <div className="bg-white p-6 rounded-lg shadow-lg relative border-black">
               <button
                 className="absolute top-2 right-2 text-gray-600 m-2 border-2 font-black h-8 w-8 border-black hover:text-gray-900"
                 onClick={handleCloseModal}

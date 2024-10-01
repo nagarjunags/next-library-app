@@ -4,10 +4,13 @@ declare module "next-auth" {
   interface User {
     role?: string; // Add custom properties here
     id?: number;
+    credits? : number;
+
   }
 
   interface Session {
     user: User; // Ensure session user type includes role
+    
   }
 }
 

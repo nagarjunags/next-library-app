@@ -1,10 +1,9 @@
-// @/components/Navbar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useParams } from "next/navigation";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Menu, X, LogIn } from "lucide-react";
@@ -31,6 +30,8 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [providers, setProviders] = useState(null);
   const pathname = usePathname();
+  const router = useRouter();
+  const { locale } = useParams(); // Get current locale
 
   useEffect(() => {
     const setAuthProviders = async () => {
@@ -40,12 +41,13 @@ const Navbar = () => {
     setAuthProviders();
   }, []);
 
+  // Use locale in navigation links
   const navItems = [
-    { href: "/", label: "Home", authRequired: true },
-    { href: "/requests", label: "Requests", authRequired: true },
-    { href: "/transactions", label: "Transactions", authRequired: true },
-    { href: "/members", label: "Members", adminOnly: true },
-    { href:"/professors",label:"Professors",authRequired:true},
+    { href: `/${locale}/`, label: "Home", authRequired: true },
+    { href: `/${locale}/requests`, label: "Requests", authRequired: true },
+    { href: `/${locale}/transactions`, label: "Transactions", authRequired: true },
+    { href: `/${locale}/members`, label: "Members", adminOnly: true },
+    { href: `/${locale}/professors`, label: "Professors", authRequired: true },
   ];
 
   return (
@@ -53,7 +55,7 @@ const Navbar = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-20 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center">
+            <Link href={`/${locale}/`} className="flex items-center">
               <span className="ml-2 text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                 CodeCraft Library
               </span>
@@ -136,10 +138,10 @@ const Navbar = () => {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/profile">Profile</Link>
+                      <Link href={`/${locale}/profile`}>Profile</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/settings">Settings</Link>
+                      <Link href={`/${locale}/settings`}>Settings</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>

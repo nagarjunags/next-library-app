@@ -71,7 +71,7 @@ export default function TransactionsClient({
                 {isAdmin && <TableHead>User ID</TableHead>}
                 <TableHead>ISBN No</TableHead>
                 <TableHead>Issued Date</TableHead>
-                <TableHead>Return Status</TableHead>
+                
                 {isAdmin && <TableHead>Action</TableHead>}
               </TableRow>
             </TableHeader>
@@ -86,28 +86,28 @@ export default function TransactionsClient({
                       "yyyy-MM-dd "
                     )}
                   </TableCell>
-                  <TableCell>
-                    {transaction.returned ? (
-                      "Returned"
-                    ) : (
-                      <span className="text-yellow-500">Not Returned</span>
-                    )}
-                  </TableCell>
+                
                   {isAdmin && (
                     <TableCell>
-                      {!transaction.returned && (
-                        <Button
-                          onClick={() =>
-                            handleReturn(transaction.transactionId, React.startTransition)
-                          }
-                          disabled={updating === transaction.id}
-                          className="bg-blue-600 hover:bg-blue-700"
-                        >
-                          {updating === transaction.id
-                            ? "Updating..."
-                            : "Mark as Returned"}
-                        </Button>
-                      )}
+                   <Button
+  onClick={() =>
+    handleReturn(transaction.transactionId, React.startTransition)
+  }
+  disabled={updating === transaction.id || transaction.isReturned === 1}  // Disable if updating or already returned
+  className={`${
+    updating === transaction.id || transaction.isReturned === 1
+      ? "bg-gray-400 cursor-not-allowed" // Disabled styling
+      : "bg-blue-600 hover:bg-blue-700"  // Enabled styling
+  }`}
+>
+  {updating === transaction.id
+    ? "Updating..."
+    : transaction.isReturned === 1
+      ? "Already Returned"
+      : "Mark as Returned"}
+</Button>
+
+
                     </TableCell>
                   )}
                 </TableRow>
